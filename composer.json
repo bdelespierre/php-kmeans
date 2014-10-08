@@ -1,0 +1,16 @@
+{
+    "name": "bdelespierre/php-kmeans",
+    "type": "library",
+    "description": "K-Means algorithm for PHP",
+    "keywords": ["php", "kmeans", "kmeans++", "utility"],
+    "license": "LGPL",
+    "authors": [
+        { "name": "Benjamin Delespierre", "email": "benjamin.delespierre@gmail.com" }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": { "KMeans": "src/" }
+    }
+}
