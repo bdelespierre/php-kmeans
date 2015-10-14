@@ -50,11 +50,11 @@ class Space extends SplObjectStorage
 
 	public function toArray()
 	{
-		$points = [];
+		$points = array();
 		foreach ($this as $point)
 			$points[] = $point->toArray();
 
-		return ['points' => $points];
+		return array('points' => $points);
 	}
 
 	public function newPoint(array $coordinates)
@@ -98,7 +98,7 @@ class Space extends SplObjectStorage
 			}
 		}
 
-		return [$min, $max];
+		return array($min, $max);
 	}
 
 	public function getRandomPoint(Point $min, Point $max)

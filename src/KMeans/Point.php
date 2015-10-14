@@ -43,10 +43,10 @@ class Point implements ArrayAccess
 
 	public function toArray()
 	{
-		return [
+		return array(
 			'coordinates' => $this->coordinates,
 			'data' => isset($this->space[$this]) ? $this->space[$this] : null,
-		];
+		);
 	}
 
 	public function getDistanceWith(self $point)
