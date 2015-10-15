@@ -49,7 +49,7 @@ class Point implements ArrayAccess
 		);
 	}
 
-	public function getDistanceWith(self $point)
+	public function getDistanceWith(self $point, $precise = true)
 	{
 		if ($point->space !== $this->space)
 			throw new LogicException("can only calculate distances from points in the same space");
@@ -60,13 +60,13 @@ class Point implements ArrayAccess
 			$distance  += $difference * $difference;
 		}
 
-		return $distance;
+		return $precise ? sqrt($distance) : $distance;
 	}
 
 	public function getClosest($points)
 	{
 		foreach($points as $point) {
-			$distance = $this->getDistanceWith($point);
+			$distance = $this->getDistanceWith($point, false);
 
 			if (!isset($minDistance)) {
 				$minDistance = $distance;
