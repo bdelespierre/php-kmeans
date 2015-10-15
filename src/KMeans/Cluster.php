@@ -44,14 +44,14 @@ class Cluster extends Point implements IteratorAggregate, Countable
 
 	public function toArray()
 	{
-		$points = [];
+		$points = array();
 		foreach ($this->points as $point)
 			$points[] = $point->toArray();
 
-		return [
+		return array(
 			'centroid' => parent::toArray(),
 			'points'   => $points,
-		];
+		);
 	}
 
 	public function attach(Point $point)
