@@ -2,7 +2,7 @@
     "name": "bdelespierre/php-kmeans",
     "type": "library",
     "description": "K-Means algorithm for PHP",
-    "keywords": ["php", "kmeans", "kmeans++", "utility"],
+    "keywords": ["php", "kmeans", "kmeans plus plus", "utility"],
     "license": "LGPL",
     "authors": [
         { "name": "Benjamin Delespierre", "email": "benjamin.delespierre@gmail.com" }

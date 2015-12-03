@@ -19,15 +19,35 @@ $points = [
 	[62,10],[74,44],[37,42],[97,60],[47,73],
 ];
 
+echo "Initialize points...\n";
+
+$points = [];
+for ($i=0; $i < $n = 1000000; $i++) {
+	$points[] = [mt_rand(0, 100), mt_rand(0, 100)];
+	printf("\r%.2f%%", ($i / $n) * 100);
+}
+
+echo "\nDone.";
+echo "\nCreating Space...\n";
+
 // create a 2-dimentions space
 $space = new KMeans\Space(2);
 
 // add points to space
-foreach ($points as $coordinates)
+foreach ($points as $i => $coordinates) {
 	$space->addPoint($coordinates);
+	printf("\r%.2f%%", ($i / $n) * 100);
+}
+
+echo "done.\n";
+echo "Determining clusters";
 
 // cluster these 50 points in 3 clusters
-$clusters = $space->solve(3);
+$clusters = $space->solve(3, KMeans\Space::SEED_DEFAULT, function () {
+	echo ".";
+});
+
+echo "\n\n";
 
 // display the cluster centers and attached points
 foreach ($clusters as $i => $cluster)
