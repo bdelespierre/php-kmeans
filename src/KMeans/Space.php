@@ -148,6 +148,8 @@ class Space extends \SplObjectStorage
             throw new \InvalidArgumentException("invalid clusters number");
         }
 
+        $clusters = [];
+
         // get the space boundaries to avoid placing clusters centroid too far from points
         list($min, $max) = $this->getBoundaries();
 
