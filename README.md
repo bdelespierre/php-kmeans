@@ -1,9 +1,9 @@
 # PHP Kmean
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/bdelespierre/laravel-blade-linter.svg?style=flat-square)](https://packagist.org/packages/bdelespierre/laravel-blade-linter)
-[![Build Status](https://img.shields.io/travis/bdelespierre/laravel-blade-linter/master.svg?style=flat-square)](https://travis-ci.org/bdelespierre/laravel-blade-linter)
-[![Quality Score](https://img.shields.io/scrutinizer/g/bdelespierre/laravel-blade-linter.svg?style=flat-square)](https://scrutinizer-ci.com/g/bdelespierre/laravel-blade-linter)
-[![Total Downloads](https://img.shields.io/packagist/dt/bdelespierre/laravel-blade-linter.svg?style=flat-square)](https://packagist.org/packages/bdelespierre/laravel-blade-linter)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/bdelespierre/php-kmeans.svg?style=flat-square)](https://packagist.org/packages/bdelespierre/php-kmeans)
+[![Build Status](https://img.shields.io/travis/bdelespierre/php-kmeans/master.svg?style=flat-square)](https://travis-ci.org/bdelespierre/php-kmeans)
+[![Quality Score](https://img.shields.io/scrutinizer/g/bdelespierre/php-kmeans.svg?style=flat-square)](https://scrutinizer-ci.com/g/bdelespierre/php-kmeans)
+[![Total Downloads](https://img.shields.io/packagist/dt/bdelespierre/php-kmeans.svg?style=flat-square)](https://packagist.org/packages/bdelespierre/php-kmean)
 
 [K-mean](http://en.wikipedia.org/wiki/K-means_clustering) clustering algorithm implementation in PHP.
 
