@@ -7,7 +7,7 @@
         "kmeans",
         "clustering"
     ],
-    "license": "LGPL",
+    "license": "MIT",
     "authors": [
         {
             "name": "Benjamin Delespierre",
