@@ -35,7 +35,9 @@ class ClusterTest extends TestCase
             [
                 'centroid' => $points[0]->toArray(),
                 'points'   => array_map(
-                    fn($p) => $p->toArray(),
+                    function ($p) {
+                        return $p->toArray();
+                    },
                     $points
                 ),
             ],

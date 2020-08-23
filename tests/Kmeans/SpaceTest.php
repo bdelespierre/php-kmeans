@@ -41,7 +41,9 @@ class SpaceTest extends TestCase
         }
 
         $this->assertEquals(
-            ['points' => array_map(fn($p) => $p->toArray(), $points)],
+            ['points' => array_map(function ($p) {
+                return $p->toArray();
+            }, $points)],
             $space->toArray()
         );
     }
@@ -119,10 +121,14 @@ class SpaceTest extends TestCase
         $min = new Point($space, [0]);
         $max = new Point($space, [10]);
 
-        Space::setRng(fn($min, $max) => $min);
+        Space::setRng(function ($min, $max) {
+            return $min;
+        });
         $this->assertEquals($min, $space->getRandomPoint($min, $max));
 
-        Space::setRng(fn($min, $max) => $max);
+        Space::setRng(function ($min, $max) {
+            return $max;
+        });
         $this->assertEquals($max, $space->getRandomPoint($min, $max));
     }
 
