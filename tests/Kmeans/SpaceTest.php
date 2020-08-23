@@ -102,7 +102,7 @@ class SpaceTest extends TestCase
     {
         $space = new Space(2);
 
-        $this->assertFalse($space->getBoundaries());
+        $this->assertEmpty($space->getBoundaries());
 
         $space->attach($p1 = new Point($space, [ 0, 0]));
         $space->attach($p2 = new Point($space, [ 0,10]));
@@ -161,14 +161,6 @@ class SpaceTest extends TestCase
 
         $this->assertEquals([2], $clusters[0]->getCoordinates());
         $this->assertEquals([8], $clusters[1]->getCoordinates());
-    }
-
-    public function testSolveExceptoin()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $space = new Space(2);
-        $space->solve(2, "INVALID");
     }
 
     public function testSolveSingleCluster()

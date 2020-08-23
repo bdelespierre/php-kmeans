@@ -25,10 +25,7 @@
 
 namespace KMeans;
 
-use \ArrayAccess;
-use \LogicException;
-
-class Point implements ArrayAccess
+class Point implements \ArrayAccess
 {
     protected $space;
     protected $dimention;
@@ -41,7 +38,7 @@ class Point implements ArrayAccess
         $this->coordinates = $coordinates;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'coordinates' => $this->coordinates,
@@ -49,10 +46,10 @@ class Point implements ArrayAccess
         ];
     }
 
-    public function getDistanceWith(self $point, $precise = true)
+    public function getDistanceWith(self $point, bool $precise = true): float
     {
         if ($point->space !== $this->space) {
-            throw new LogicException("can only calculate distances from points in the same space");
+            throw new \LogicException("can only calculate distances from points in the same space");
         }
 
         $distance = 0;
@@ -64,7 +61,7 @@ class Point implements ArrayAccess
         return $precise ? sqrt($distance) : $distance;
     }
 
-    public function getClosest($points)
+    public function getClosest(iterable $points): Point
     {
         foreach ($points as $point) {
             $distance = $this->getDistanceWith($point, false);
@@ -84,22 +81,22 @@ class Point implements ArrayAccess
         return $minPoint;
     }
 
-    public function belongsTo(Space $space)
+    public function belongsTo(Space $space): bool
     {
         return $this->space === $space;
     }
 
-    public function getSpace()
+    public function getSpace(): Space
     {
         return $this->space;
     }
 
-    public function getCoordinates()
+    public function getCoordinates(): array
     {
         return $this->coordinates;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->coordinates[$offset]);
     }
@@ -109,12 +106,12 @@ class Point implements ArrayAccess
         return $this->coordinates[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->coordinates[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->coordinates[$offset]);
     }

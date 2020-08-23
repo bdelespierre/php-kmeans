@@ -25,13 +25,7 @@
 
 namespace KMeans;
 
-use \IteratorAggregate;
-use \Countable;
-use \SplObjectStorage;
-use \InvalidArgumentException;
-use \LogicException;
-
-class Cluster extends Point implements IteratorAggregate, Countable
+class Cluster extends Point implements \IteratorAggregate, \Countable
 {
     protected $space;
     protected $points;
@@ -39,10 +33,10 @@ class Cluster extends Point implements IteratorAggregate, Countable
     public function __construct(Space $space, array $coordinates)
     {
         parent::__construct($space, $coordinates);
-        $this->points = new SplObjectStorage;
+        $this->points = new \SplObjectStorage;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         $points = [];
         foreach ($this->points as $point) {
@@ -55,33 +49,33 @@ class Cluster extends Point implements IteratorAggregate, Countable
         ];
     }
 
-    public function attach(Point $point)
+    public function attach(Point $point): Point
     {
         if ($point instanceof self) {
-            throw new LogicException("cannot attach a cluster to another");
+            throw new \LogicException("cannot attach a cluster to another");
         }
 
         $this->points->attach($point);
         return $point;
     }
 
-    public function detach(Point $point)
+    public function detach(Point $point): Point
     {
         $this->points->detach($point);
         return $point;
     }
 
-    public function attachAll(SplObjectStorage $points)
+    public function attachAll(\SplObjectStorage $points): void
     {
         $this->points->addAll($points);
     }
 
-    public function detachAll(SplObjectStorage $points)
+    public function detachAll(\SplObjectStorage $points): void
     {
         $this->points->removeAll($points);
     }
 
-    public function updateCentroid()
+    public function updateCentroid(): void
     {
         if (!$count = count($this->points)) {
             return;
@@ -100,12 +94,12 @@ class Cluster extends Point implements IteratorAggregate, Countable
         }
     }
 
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         return $this->points;
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->points);
     }

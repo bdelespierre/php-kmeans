@@ -25,11 +25,7 @@
 
 namespace KMeans;
 
-use \SplObjectStorage;
-use \LogicException;
-use \InvalidArgumentException;
-
-class Space extends SplObjectStorage
+class Space extends \SplObjectStorage
 {
     protected $dimention;
 
@@ -38,18 +34,18 @@ class Space extends SplObjectStorage
     public function __construct($dimention)
     {
         if ($dimention < 1) {
-            throw new LogicException("a space dimention cannot be null or negative");
+            throw new \LogicException("a space dimention cannot be null or negative");
         }
 
         $this->dimention = $dimention;
     }
 
-    public static function setRng(callable $fn)
+    public static function setRng(callable $fn): void
     {
         static::$rng = $fn;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         $points = [];
         foreach ($this as $point) {
@@ -59,38 +55,38 @@ class Space extends SplObjectStorage
         return ['points' => $points];
     }
 
-    public function newPoint(array $coordinates)
+    public function newPoint(array $coordinates): Point
     {
         if (count($coordinates) != $this->dimention) {
-            throw new LogicException("(" . implode(',', $coordinates) . ") is not a point of this space");
+            throw new \LogicException("(" . implode(',', $coordinates) . ") is not a point of this space");
         }
 
         return new Point($this, $coordinates);
     }
 
-    public function addPoint(array $coordinates, $data = null)
+    public function addPoint(array $coordinates, $data = null): void
     {
-        return $this->attach($this->newPoint($coordinates), $data);
+        $this->attach($this->newPoint($coordinates), $data);
     }
 
-    public function attach($point, $data = null)
+    public function attach($point, $data = null): void
     {
         if (!$point instanceof Point) {
-            throw new InvalidArgumentException("can only attach points to spaces");
+            throw new \InvalidArgumentException("can only attach points to spaces");
         }
 
-        return parent::attach($point, $data);
+        parent::attach($point, $data);
     }
 
-    public function getDimention()
+    public function getDimention(): int
     {
         return $this->dimention;
     }
 
-    public function getBoundaries()
+    public function getBoundaries(): array
     {
         if (!count($this)) {
-            return false;
+            return [];
         }
 
         $min = $this->newPoint(array_fill(0, $this->dimention, null));
@@ -98,15 +94,20 @@ class Space extends SplObjectStorage
 
         foreach ($this as $point) {
             for ($n=0; $n < $this->dimention; $n++) {
-                ($min[$n] > $point[$n] || $min[$n] === null) && $min[$n] = $point[$n];
-                ($max[$n] < $point[$n] || $max[$n] === null) && $max[$n] = $point[$n];
+                if ($min[$n] === null || $min[$n] > $point[$n]) {
+                    $min[$n] = $point[$n];
+                }
+
+                if ($max[$n] === null || $max[$n] < $point[$n]) {
+                    $max[$n] = $point[$n];
+                }
             }
         }
 
         return [$min, $max];
     }
 
-    public function getRandomPoint(Point $min, Point $max)
+    public function getRandomPoint(Point $min, Point $max): Point
     {
         $point = $this->newPoint(array_fill(0, $this->dimention, null));
         $rng = static::$rng;
@@ -118,33 +119,31 @@ class Space extends SplObjectStorage
         return $point;
     }
 
-    public function solve($nbClusters, $iterationCallback = null)
+    public function solve(int $nbClusters, callable $iterationCallback = null): array
     {
-        if ($iterationCallback && !is_callable($iterationCallback)) {
-            throw new InvalidArgumentException("invalid iteration callback");
-        }
-
         // initialize K clusters
         $clusters = $this->initializeClusters($nbClusters);
 
         // there's only one cluster, clusterization has no meaning
         if (count($clusters) == 1) {
-            return $clusters[0];
+            return $clusters;
         }
 
         // until convergence is reached
         do {
-            $iterationCallback && $iterationCallback($this, $clusters);
+            if ($iterationCallback) {
+                $iterationCallback($this, $clusters);
+            }
         } while ($this->iterate($clusters));
 
         // clustering is done.
         return $clusters;
     }
 
-    protected function initializeClusters($nbClusters)
+    protected function initializeClusters(int $nbClusters): array
     {
         if ($nbClusters <= 0) {
-            throw new InvalidArgumentException("invalid clusters number");
+            throw new \InvalidArgumentException("invalid clusters number");
         }
 
         // get the space boundaries to avoid placing clusters centroid too far from points
@@ -161,13 +160,13 @@ class Space extends SplObjectStorage
         return $clusters;
     }
 
-    protected function iterate($clusters)
+    protected function iterate(array $clusters): bool
     {
         $continue = false;
 
         // migration storages
-        $attach = new SplObjectStorage;
-        $detach = new SplObjectStorage;
+        $attach = new \SplObjectStorage;
+        $detach = new \SplObjectStorage;
 
         // calculate proximity amongst points and clusters
         foreach ($clusters as $cluster) {
@@ -177,8 +176,13 @@ class Space extends SplObjectStorage
 
                 // move the point from its old cluster to its closest
                 if ($closest !== $cluster) {
-                    isset($attach[$closest]) || $attach[$closest] = new SplObjectStorage;
-                    isset($detach[$cluster]) || $detach[$cluster] = new SplObjectStorage;
+                    if (! isset($attach[$closest])) {
+                        $attach[$closest] = new \SplObjectStorage;
+                    }
+
+                    if (! isset($detach[$cluster])) {
+                        $detach[$cluster] = new \SplObjectStorage;
+                    }
 
                     $attach[$closest]->attach($point);
                     $detach[$cluster]->attach($point);
