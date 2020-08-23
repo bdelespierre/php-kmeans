@@ -30,7 +30,7 @@ foreach ($points as $i => $coordinates) {
 echo "Clustering";
 
 // cluster these 50 points in 3 clusters
-$clusters = $space->solve(3, KMeans\Space::SEED_DEFAULT, function () {
+$clusters = $space->solve(3, function () {
     echo ".";
 });
 
