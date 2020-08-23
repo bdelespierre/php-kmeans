@@ -1,77 +1,98 @@
-# PHP K-Means
-_Clustering made simple_
+# PHP Kmean
 
-<bloquote>k-means clustering is a method of vector quantization, originally from signal processing, that is popular for cluster analysis in data mining. k-means clustering aims to partition n observations into k clusters in which each observation belongs to the cluster with the nearest mean, serving as a prototype of the cluster. This results in a partitioning of the data space into Voronoi cells.</bloquote>
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/bdelespierre/laravel-blade-linter.svg?style=flat-square)](https://packagist.org/packages/bdelespierre/laravel-blade-linter)
+[![Build Status](https://img.shields.io/travis/bdelespierre/laravel-blade-linter/master.svg?style=flat-square)](https://travis-ci.org/bdelespierre/laravel-blade-linter)
+[![Quality Score](https://img.shields.io/scrutinizer/g/bdelespierre/laravel-blade-linter.svg?style=flat-square)](https://scrutinizer-ci.com/g/bdelespierre/laravel-blade-linter)
+[![Total Downloads](https://img.shields.io/packagist/dt/bdelespierre/laravel-blade-linter.svg?style=flat-square)](https://packagist.org/packages/bdelespierre/laravel-blade-linter)
 
-Read more on [Wikipedia](http://en.wikipedia.org/wiki/K-means_clustering)
+[K-mean](http://en.wikipedia.org/wiki/K-means_clustering) clustering algorithm implementation in PHP.
 
-PHP K-Means, like its name suggest, is an implementation of K-Means and K-Means++ algorithms for the PHP plateform. It works with an unlimited number of dimentions.
+Please also see the [FAQ](#faq)
+
+## Installation
+
+You can install the package via composer:
+
+```bash
+composer require bdelespierre/php-kmeans
+```
 
 ## Usage
 
-Given the following points of R²
-
 ```PHP
+require "vendor/autoload.php";
+
+// prepare 50 points of 2D space to be clustered
 $points = [
     [80,55],[86,59],[19,85],[41,47],[57,58],
-	[76,22],[94,60],[13,93],[90,48],[52,54],
-	[62,46],[88,44],[85,24],[63,14],[51,40],
-	[75,31],[86,62],[81,95],[47,22],[43,95],
-	[71,19],[17,65],[69,21],[59,60],[59,12],
-	[15,22],[49,93],[56,35],[18,20],[39,59],
-	[50,15],[81,36],[67,62],[32,15],[75,65],
-	[10,47],[75,18],[13,45],[30,62],[95,79],
-	[64,11],[92,14],[94,49],[39,13],[60,68],
-	[62,10],[74,44],[37,42],[97,60],[47,73],
+    [76,22],[94,60],[13,93],[90,48],[52,54],
+    [62,46],[88,44],[85,24],[63,14],[51,40],
+    [75,31],[86,62],[81,95],[47,22],[43,95],
+    [71,19],[17,65],[69,21],[59,60],[59,12],
+    [15,22],[49,93],[56,35],[18,20],[39,59],
+    [50,15],[81,36],[67,62],[32,15],[75,65],
+    [10,47],[75,18],[13,45],[30,62],[95,79],
+    [64,11],[92,14],[94,49],[39,13],[60,68],
+    [62,10],[74,44],[37,42],[97,60],[47,73],
 ];
-```
 
-We want to find 3 clusters:
-
-```PHP
-// create a 2 dimentionnal space and fill it
+// create a 2-dimentions space
 $space = new KMeans\Space(2);
 
-foreach ($points as $point)
-    $space->addPoint($point);
+// add points to space
+foreach ($points as $i => $coordinates) {
+    $space->addPoint($coordinates);
+}
 
- // resolve 3 clusters
+// cluster these 50 points in 3 clusters
 $clusters = $space->solve(3);
+
+// display the cluster centers and attached points
+foreach ($clusters as $num => $cluster) {
+    $coordinates = $cluster->getCoordinates();
+    printf(
+        "Cluster %s [%d,%d]: %d points\n",
+        $num,
+        $coordinates[0],
+        $coordinates[1],
+        count($cluster->getPoints())
+    );
+}
 ```
 
-Now we can retrieve each cluster's centroid (the average meaning amongts its points) and all the points in it:
+**Note:** the example is given with points of a 2D space but it will work with any dimention >1.
 
-```PHP
-foreach ($clusters as $i => $cluster)
-    printf("Cluster %d [%d,%d]: %d points\n", $i, $cluster[0], $cluster[1], count($cluster));
+### Testing
+
+``` bash
+composer test
 ```
 
-Example of output:
+### Changelog
 
-```
-Cluster 0 [79,58]: 18 points
-Cluster 1 [57,19]: 19 points
-Cluster 2 [31,66]: 13 points
-```
+Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
 
-### Heads up!
+## Contributing
 
-K-Means algorithm is non-deterministic so you may get different results when running it multiple times with the same data. The more points you add in the space, the more accurate the result will be.
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
-You are strongly advised to read the Wikipedia article thoroughly before using this library.
+### Security
 
-## K-Means++
+If you discover any security related issues, please email benjamin.delespierre@gmail.com instead of using the issue tracker.
 
-When triggering the `Kmeans\Space::solve` method, you may provide an alternative seeding method in order to initialize the clusters with the [David Arthur and Sergei Vassilvitskii algorithm](http://en.wikipedia.org/wiki/K-means%2B%2B) which avoids poor clustering results.
+## Credits
 
-```PHP
-// resolve 3 clusters using David Arthur and Sergei Vassilvitskii seeding algorithm
-$clusters = $space->solve(3, KMeans\Space::SEED_DASV);
-```
+- [Benjamin Delespierre](https://github.com/bdelespierre)
+- [Ron Cemer](https://github.com/roncemer)
+- [All Contributors](../../contributors)
 
-## Howto
+## License
 
-### Get coordinates of a point/cluster:
+Lesser General Public License (LGPL). Please see [License File](LICENSE.md) for more information.
+
+## FAQ
+
+### How to get coordinates of a point/cluster:
 ```PHP
 $x = $point[0];
 $y = $point[1];
@@ -84,20 +105,21 @@ list($x,$y) = $point->getCoordinates();
 ### List all points of a space/cluster:
 
 ```PHP
-foreach ($cluster as $point)
+foreach ($cluster as $point) {
     printf('[%d,%d]', $point[0], $point[1]);
+}
 ```
 
 ### Attach data to a point:
 
 ```PHP
-$space->addPoint($coordinate, $data);
+$point = $space->addPoint([$x, $y, $z], "user #123");
 ```
 
 ### Retrieve point data:
 
 ```PHP
-$data = $space[$point];
+$data = $space[$point]; // e.g. "user #123"
 ```
 
 ### Watch the algorithm run
@@ -105,12 +127,13 @@ $data = $space[$point];
 Each iteration step can be monitored using a callback function passed to `Kmeans\Space::solve`:
 
 ```PHP
-$clusters = $space->solve(3, KMeans\Space::SEED_DEFAULT, function($space, $clusters) {
+$clusters = $space->solve(3, function($space, $clusters) {
     static $iterations = 0;
 
     printf("Iteration: %d\n", ++$iterations);
 
-    foreach ($clusters as $i => $cluster)
+    foreach ($clusters as $i => $cluster) {
         printf("Cluster %d [%d,%d]: %d points\n", $i, $cluster[0], $cluster[1], count($cluster));
+    }
 });
 ```

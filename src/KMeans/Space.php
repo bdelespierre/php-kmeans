@@ -64,9 +64,11 @@ class Space extends \SplObjectStorage
         return new Point($this, $coordinates);
     }
 
-    public function addPoint(array $coordinates, $data = null): void
+    public function addPoint(array $coordinates, $data = null): Point
     {
-        $this->attach($this->newPoint($coordinates), $data);
+        $this->attach($point = $this->newPoint($coordinates), $data);
+
+        return $point;
     }
 
     public function attach($point, $data = null): void
