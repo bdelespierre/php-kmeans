@@ -1,4 +1,1 @@
-preset: php
-
-disabled:
-  - single_class_element_per_statement
+preset: psr2
