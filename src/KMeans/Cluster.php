@@ -48,6 +48,11 @@ class Cluster extends Point implements \IteratorAggregate, \Countable
             'points'   => $points,
         ];
     }
+    
+    public function getPoints(): \Iterator
+    {
+        return $this;
+    }
 
     public function attach(Point $point): Point
     {
