@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of PHP K-Means
  *
@@ -53,7 +54,7 @@ class Point implements \ArrayAccess
         }
 
         $distance = 0;
-        for ($n=0; $n<$this->dimention; $n++) {
+        for ($n = 0; $n < $this->dimention; $n++) {
             $difference = $this->coordinates[$n] - $point->coordinates[$n];
             $distance  += $difference * $difference;
         }

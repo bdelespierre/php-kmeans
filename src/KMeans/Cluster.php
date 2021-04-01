@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of PHP K-Means
  *
@@ -33,7 +34,7 @@ class Cluster extends Point implements \IteratorAggregate, \Countable
     public function __construct(Space $space, array $coordinates)
     {
         parent::__construct($space, $coordinates);
-        $this->points = new \SplObjectStorage;
+        $this->points = new \SplObjectStorage();
     }
 
     public function toArray(): array
@@ -84,12 +85,12 @@ class Cluster extends Point implements \IteratorAggregate, \Countable
         $centroid = $this->space->newPoint(array_fill(0, $this->dimention, 0));
 
         foreach ($this->points as $point) {
-            for ($n=0; $n<$this->dimention; $n++) {
+            for ($n = 0; $n < $this->dimention; $n++) {
                 $centroid->coordinates[$n] += $point->coordinates[$n];
             }
         }
 
-        for ($n=0; $n<$this->dimention; $n++) {
+        for ($n = 0; $n < $this->dimention; $n++) {
             $this->coordinates[$n] = $centroid->coordinates[$n] / $count;
         }
     }

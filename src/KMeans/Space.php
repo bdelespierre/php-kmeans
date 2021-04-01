@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of PHP K-Means
  *
@@ -95,7 +96,7 @@ class Space extends \SplObjectStorage
         $max = $this->newPoint(array_fill(0, $this->dimention, null));
 
         foreach ($this as $point) {
-            for ($n=0; $n < $this->dimention; $n++) {
+            for ($n = 0; $n < $this->dimention; $n++) {
                 if ($min[$n] === null || $min[$n] > $point[$n]) {
                     $min[$n] = $point[$n];
                 }
@@ -114,7 +115,7 @@ class Space extends \SplObjectStorage
         $point = $this->newPoint(array_fill(0, $this->dimention, null));
         $rng = static::$rng;
 
-        for ($n=0; $n < $this->dimention; $n++) {
+        for ($n = 0; $n < $this->dimention; $n++) {
             $point[$n] = $rng($min[$n], $max[$n]);
         }
 
@@ -154,7 +155,7 @@ class Space extends \SplObjectStorage
         list($min, $max) = $this->getBoundaries();
 
         // initialize N clusters with a random point within space boundaries
-        for ($n=0; $n<$nbClusters; $n++) {
+        for ($n = 0; $n < $nbClusters; $n++) {
             $clusters[] = new Cluster($this, $this->getRandomPoint($min, $max)->getCoordinates());
         }
 
@@ -169,8 +170,8 @@ class Space extends \SplObjectStorage
         $continue = false;
 
         // migration storages
-        $attach = new \SplObjectStorage;
-        $detach = new \SplObjectStorage;
+        $attach = new \SplObjectStorage();
+        $detach = new \SplObjectStorage();
 
         // calculate proximity amongst points and clusters
         foreach ($clusters as $cluster) {
@@ -181,11 +182,11 @@ class Space extends \SplObjectStorage
                 // move the point from its old cluster to its closest
                 if ($closest !== $cluster) {
                     if (! isset($attach[$closest])) {
-                        $attach[$closest] = new \SplObjectStorage;
+                        $attach[$closest] = new \SplObjectStorage();
                     }
 
                     if (! isset($detach[$cluster])) {
-                        $detach[$cluster] = new \SplObjectStorage;
+                        $detach[$cluster] = new \SplObjectStorage();
                     }
 
                     $attach[$closest]->attach($point);

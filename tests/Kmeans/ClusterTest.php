@@ -106,7 +106,7 @@ class ClusterTest extends TestCase
             new Point($space, [2,2]),
         ];
 
-        $storage = new \SplObjectStorage;
+        $storage = new \SplObjectStorage();
         foreach ($points as $point) {
             $storage->attach($point);
         }
@@ -129,7 +129,7 @@ class ClusterTest extends TestCase
             $cluster->attach($point);
         }
 
-        $storage = new \SplObjectStorage;
+        $storage = new \SplObjectStorage();
         foreach ($points as $point) {
             $storage->attach($point);
         }
