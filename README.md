@@ -55,7 +55,7 @@ foreach ($clusters as $num => $cluster) {
         $num,
         $coordinates[0],
         $coordinates[1],
-        count($cluster->getPoints())
+        count($cluster)
     );
 }
 ```
