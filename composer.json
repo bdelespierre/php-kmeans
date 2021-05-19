@@ -32,7 +32,16 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit",
-        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+        "test": [
+            "vendor/bin/phpunit --color=always"
+        ],
+        "test:coverage": [
+            "@putenv XDEBUG_MODE=coverage",
+            "vendor/bin/phpunit --color=always --coverage-clover=\"build/code-coverage/clover.xml\""
+        ],
+        "test:coverage-html": [
+            "@putenv XDEBUG_MODE=coverage",
+            "vendor/bin/phpunit --color=always --coverage-html=\"build/code-coverage\""
+        ]
     }
 }

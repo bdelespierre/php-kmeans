@@ -26,9 +26,15 @@
 
 namespace KMeans;
 
-class Space extends \SplObjectStorage
+use KMeans\Algorithms\CallbackDistance;
+use KMeans\Algorithms\EuclidianDistance;
+use KMeans\Interfaces\DistanceAlgorithmInterface;
+use KMeans\Interfaces\SpaceInterface;
+
+class Space extends \SplObjectStorage implements SpaceInterface
 {
     protected $dimention;
+    protected $distanceAlgo;
 
     protected static $rng = 'mt_rand';
 
@@ -39,11 +45,31 @@ class Space extends \SplObjectStorage
         }
 
         $this->dimention = $dimention;
+        $this->setDistanceAlgorithm(new EuclidianDistance());
     }
 
     public static function setRng(callable $fn): void
     {
         static::$rng = $fn;
+    }
+
+    public function setDistanceAlgorithm($algo): void
+    {
+        if (is_callable($algo) && ! $algo instanceof DistanceAlgorithmInterface) {
+            $algo = new CallbackDistance($algo);
+        }
+
+        if (! $algo instanceof DistanceAlgorithmInterface) {
+            throw new \RuntimeException(
+                "distance algorithm must implement KMeans\Interfaces\DistanceAlgorithmInterface"
+            );
+        }
+
+        $this->distanceAlgo = $algo;
+
+        foreach ($this as $point) {
+            $point->setDistanceAlgorithm($algo);
+        }
     }
 
     public function toArray(): array
@@ -62,7 +88,7 @@ class Space extends \SplObjectStorage
             throw new \LogicException("(" . implode(',', $coordinates) . ") is not a point of this space");
         }
 
-        return new Point($this, $coordinates);
+        return new Point($this, $coordinates, $this->distanceAlgo);
     }
 
     public function addPoint(array $coordinates, $data = null): Point

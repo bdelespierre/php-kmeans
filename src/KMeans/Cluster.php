@@ -82,15 +82,16 @@ class Cluster extends Point implements \IteratorAggregate, \Countable
             return;
         }
 
-        $centroid = $this->space->newPoint(array_fill(0, $this->dimention, 0));
+        $dimention = $this->space->getDimention();
+        $centroid = $this->space->newPoint(array_fill(0, $dimention, 0));
 
         foreach ($this->points as $point) {
-            for ($n = 0; $n < $this->dimention; $n++) {
+            for ($n = 0; $n < $dimention; $n++) {
                 $centroid->coordinates[$n] += $point->coordinates[$n];
             }
         }
 
-        for ($n = 0; $n < $this->dimention; $n++) {
+        for ($n = 0; $n < $dimention; $n++) {
             $this->coordinates[$n] = $centroid->coordinates[$n] / $count;
         }
     }

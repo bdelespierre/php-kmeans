@@ -26,17 +26,27 @@
 
 namespace KMeans;
 
-class Point implements \ArrayAccess
+use KMeans\Algorithms\EuclidianDistance;
+use KMeans\Interfaces\DistanceAlgorithmInterface;
+use KMeans\Interfaces\PointInterface;
+use KMeans\Interfaces\SpaceInterface;
+
+class Point implements PointInterface, \ArrayAccess
 {
     protected $space;
-    protected $dimention;
     protected $coordinates;
+    protected $distanceAlgo;
 
-    public function __construct(Space $space, array $coordinates)
+    public function __construct(SpaceInterface $space, array $coordinates, DistanceAlgorithmInterface $algo = null)
     {
-        $this->space       = $space;
-        $this->dimention   = $space->getDimention();
+        $this->space = $space;
         $this->coordinates = $coordinates;
+        $this->setDistanceAlgorithm($algo ?: new EuclidianDistance());
+    }
+
+    public function setDistanceAlgorithm(DistanceAlgorithmInterface $algo): void
+    {
+        $this->distanceAlgo = $algo;
     }
 
     public function toArray(): array
@@ -47,19 +57,9 @@ class Point implements \ArrayAccess
         ];
     }
 
-    public function getDistanceWith(self $point, bool $precise = true): float
+    public function getDistanceWith(self $point): float
     {
-        if ($point->space !== $this->space) {
-            throw new \LogicException("can only calculate distances from points in the same space");
-        }
-
-        $distance = 0;
-        for ($n = 0; $n < $this->dimention; $n++) {
-            $difference = $this->coordinates[$n] - $point->coordinates[$n];
-            $distance  += $difference * $difference;
-        }
-
-        return $precise ? sqrt($distance) : $distance;
+        return $this->distanceAlgo->getDistanceBetween($this, $point);
     }
 
     public function getClosest(iterable $points): Point

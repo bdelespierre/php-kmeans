@@ -2,6 +2,7 @@
 
 namespace Tests\Kmeans;
 
+use KMeans\Algorithms\CallbackDistance;
 use KMeans\Point;
 use KMeans\Space;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +24,37 @@ class SpaceTest extends TestCase
         $this->expectException(\LogicException::class);
 
         new Space(-1);
+    }
+
+    public function testSetDistanceAlgorithm()
+    {
+        $space = new Space(2);
+
+        $a = $space->addPoint([1,1]);
+        $b = $space->addPoint([2,2]);
+
+        // bogus dist. alg. for testing
+        $space->setDistanceAlgorithm(function ($a, $b) {
+            return -1;
+        });
+
+        $this->assertEquals(
+            -1,
+            $a->getDistanceWith($b)
+        );
+    }
+
+    public function testSetDistanceAlgorithmFails()
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $space = new Space(2);
+
+        $a = $space->addPoint([1,1]);
+        $b = $space->addPoint([2,2]);
+
+        // bogus dist. alg. for testing
+        $space->setDistanceAlgorithm("hello!");
     }
 
     public function testToArray()
