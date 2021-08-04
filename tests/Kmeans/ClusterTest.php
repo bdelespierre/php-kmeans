@@ -193,5 +193,14 @@ class ClusterTest extends TestCase
 
         $cluster->attach($points[2]);
         $this->assertEquals(3, $cluster->count());
+
+        $cluster->detach($points[2]);
+        $this->assertEquals(2, $cluster->count());
+
+        $cluster->detach($points[1]);
+        $this->assertEquals(1, $cluster->count());
+
+        $cluster->detach($points[0]);
+        $this->assertEquals(0, $cluster->count());
     }
 }

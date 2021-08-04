@@ -50,6 +50,15 @@ class PointTest extends TestCase
         $point1->getDistanceWith($point2);
     }
 
+    public function testGetDistanceWithPreciseFalse()
+    {
+        $space  = new Space(2);
+        $point1 = new Point($space, [4,3]);
+        $point2 = new Point($space, [2,1]);
+
+        $this->assertEquals(8, $point1->getDistanceWith($point2, false));
+    }
+
     public function testGetClosest()
     {
         $space  = new Space(2);
@@ -110,6 +119,16 @@ class PointTest extends TestCase
 
         $this->assertEquals(1, $point->offsetGet(0));
         $this->assertEquals(2, $point->offsetGet(1));
+    }
+
+    public function testOffsetGetError()
+    {
+        $this->expectError();
+
+        $space = new Space(1);
+        $point = new Point($space, [1]);
+
+        $point->offsetGet(1);
     }
 
     public function testOffsetSet()
