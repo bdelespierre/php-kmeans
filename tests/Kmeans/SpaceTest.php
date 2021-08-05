@@ -10,8 +10,6 @@ class SpaceTest extends TestCase
 {
     public function testConstruct()
     {
-        $space = new Space(2);
-
         $this->assertInstanceOf(Space::class, new Space(1));
         $this->assertInstanceOf(Space::class, new Space(2));
         $this->assertInstanceOf(Space::class, new Space(3));
