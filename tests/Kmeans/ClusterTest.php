@@ -146,9 +146,9 @@ class ClusterTest extends TestCase
         $cluster->updateCentroid();
         $this->assertEquals([0], $cluster->getCoordinates());
 
-        $cluster->attach($p1 = new Point($space, [5]));
-        $cluster->attach($p2 = new Point($space, [6]));
-        $cluster->attach($p3 = new Point($space, [7]));
+        $cluster->attach(new Point($space, [5]));
+        $cluster->attach(new Point($space, [6]));
+        $cluster->attach(new Point($space, [7]));
 
         $cluster->updateCentroid();
 
