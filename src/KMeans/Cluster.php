@@ -28,6 +28,9 @@ namespace KMeans;
 
 class Cluster extends Point implements \IteratorAggregate, \Countable
 {
+    public const INIT_RANDOM = 1;
+    public const INIT_KMEANS_PLUS_PLUS = 2;
+
     protected $space;
     protected $points;
 

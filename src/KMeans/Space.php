@@ -122,10 +122,10 @@ class Space extends \SplObjectStorage
         return $point;
     }
 
-    public function solve(int $nbClusters, callable $iterationCallback = null): array
+    public function solve(int $nbClusters, callable $iterationCallback = null, $initMethod = Cluster::INIT_RANDOM): array
     {
         // initialize K clusters
-        $clusters = $this->initializeClusters($nbClusters);
+        $clusters = $this->initializeClusters($nbClusters, $initMethod);
 
         // there's only one cluster, clusterization has no meaning
         if (count($clusters) == 1) {
@@ -143,12 +143,81 @@ class Space extends \SplObjectStorage
         return $clusters;
     }
 
-    protected function initializeClusters(int $nbClusters): array
+    protected function initializeClusters(int $nbClusters, int $initMethod): array
     {
         if ($nbClusters <= 0) {
             throw new \InvalidArgumentException("invalid clusters number");
         }
 
+        switch ($initMethod) {
+            case Cluster::INIT_RANDOM:
+                $clusters = $this->initializeRandomClusters($nbClusters);
+
+                break;
+
+            case Cluster::INIT_KMEANS_PLUS_PLUS:
+                $clusters = $this->initializeKmeansPlusPlusClusters($nbClusters);
+
+                break;
+
+            default:
+                return [];
+        }
+
+        // assign all points to the first cluster
+        $clusters[0]->attachAll($this);
+
+        return $clusters;
+    }
+
+    function random_float ($min,$max) {
+        return ($min+lcg_value()*(abs($max-$min)));
+    }
+
+    protected function initializeKmeansPlusPlusClusters(int $nbClusters): array
+    {
+        $clusters = [];
+        $clusters[] = new Cluster($this, $this->current()->getCoordinates());
+
+        for ($i = 1; $i < $nbClusters; ++$i) {
+            $sum = 0;
+            $distances = [];
+            foreach ($this as $point) {
+                $distance = $point->getDistanceWith($point->getClosest($clusters), false);
+                $distances[] = $distance;
+                $sum += $distance;
+            }
+
+            $probabilities = [];
+            foreach ($distances as $distance) {
+                $probabilities[] = $distance / $sum;
+            }
+
+            $cumulativeProbabilities = array_reduce($probabilities, function ($c, $i) {
+                $c[] = end($c) + $i;
+                return $c;
+            }, []);
+
+            $rng = static::$rng;
+            $rand = $rng() / mt_getrandmax();
+            foreach ($cumulativeProbabilities as $j => $cumulativeProbability) {
+                if ($rand < $cumulativeProbability) {
+                    foreach ($this as $key => $value) {
+                        if ($j == $key) {
+                            $clusters[] = new Cluster($this, $value->getCoordinates());
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        return $clusters;
+    }
+
+    protected function initializeRandomClusters(int $nbClusters): array
+    {
         $clusters = [];
 
         // get the space boundaries to avoid placing clusters centroid too far from points
@@ -158,10 +227,6 @@ class Space extends \SplObjectStorage
         for ($n = 0; $n < $nbClusters; $n++) {
             $clusters[] = new Cluster($this, $this->getRandomPoint($min, $max)->getCoordinates());
         }
-
-        // assign all points to the first cluster
-        $clusters[0]->attachAll($this);
-
         return $clusters;
     }
 

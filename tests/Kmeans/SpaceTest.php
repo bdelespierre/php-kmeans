@@ -2,6 +2,7 @@
 
 namespace Tests\Kmeans;
 
+use KMeans\Cluster;
 use KMeans\Point;
 use KMeans\Space;
 use PHPUnit\Framework\TestCase;
@@ -181,5 +182,41 @@ class SpaceTest extends TestCase
         $space = new Space(2);
         $space->attach($space->newPoint([0,0]));
         $space->solve(-1);
+    }
+
+    public function testSolveWithKmeansPlusPlus()
+    {
+        Space::setRng(function () {
+            return 52590703;
+        });
+
+        $space = new Space(1);
+
+        $space->attach($space->newPoint([1]));
+        $space->attach($space->newPoint([2]));
+        $space->attach($space->newPoint([3]));
+
+        $space->attach($space->newPoint([7]));
+        $space->attach($space->newPoint([8]));
+        $space->attach($space->newPoint([9]));
+
+        $iterations = 0;
+        $history    = [];
+        $callback   = function ($space, $clusters) use (&$iterations, &$history) {
+            foreach ($clusters as $cluster) {
+                $history[$iterations][] = $cluster->getCoordinates()[0];
+            }
+
+            $iterations++;
+        };
+
+        $clusters = $space->solve(2, $callback, Cluster::INIT_KMEANS_PLUS_PLUS);
+
+        $this->assertEquals([[1,3],[1.5,6.75],[2,8]], $history);
+        $this->assertEquals(3, $iterations);
+        $this->assertcount(2, $clusters);
+
+        $this->assertEquals([2], $clusters[0]->getCoordinates());
+        $this->assertEquals([8], $clusters[1]->getCoordinates());
     }
 }
