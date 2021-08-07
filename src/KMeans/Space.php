@@ -170,10 +170,6 @@ class Space extends \SplObjectStorage
         return $clusters;
     }
 
-    function random_float ($min,$max) {
-        return ($min+lcg_value()*(abs($max-$min)));
-    }
-
     protected function initializeKmeansPlusPlusClusters(int $nbClusters): array
     {
         $clusters = [];
