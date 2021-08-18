@@ -22,8 +22,8 @@
         "phpunit/phpunit": "^9.3"
     },
     "autoload": {
-        "psr-0": {
-            "KMeans": "src/"
+        "psr-4": {
+            "Bdelespierre\\Kmeans\\": "src/"
         }
     },
     "autoload-dev": {
