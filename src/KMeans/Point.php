@@ -62,16 +62,12 @@ class Point implements \ArrayAccess
         return $precise ? sqrt($distance) : $distance;
     }
 
-    public function getClosest(iterable $points): Point
+    public function getClosest(iterable $points): ?Point
     {
+        $minDistance = PHP_INT_MAX;
+        $minPoint = null;
         foreach ($points as $point) {
             $distance = $this->getDistanceWith($point, false);
-
-            if (!isset($minDistance)) {
-                $minDistance = $distance;
-                $minPoint    = $point;
-                continue;
-            }
 
             if ($distance < $minDistance) {
                 $minDistance = $distance;
