@@ -1,73 +1,82 @@
 <?php
 
-namespace Bdelespierre\Kmeans;
+namespace Kmeans;
 
-use Bdelespierre\Kmeans\Concerns\HasSpaceTrait;
-use Bdelespierre\Kmeans\Interfaces\PointCollectionInterface;
-use Bdelespierre\Kmeans\Interfaces\PointInterface;
-use Bdelespierre\Kmeans\Interfaces\SpaceInterface;
+use Kmeans\Concerns\HasSpaceTrait;
+use Kmeans\Interfaces\PointCollectionInterface;
+use Kmeans\Interfaces\PointInterface;
+use Kmeans\Interfaces\SpaceInterface;
 
 class PointCollection implements PointCollectionInterface
 {
     use HasSpaceTrait;
 
-    protected \SplObjectStorage $storage;
+    /**
+     * @var \SplObjectStorage<PointInterface, null>
+     */
+    protected \SplObjectStorage $points;
 
-    public function __construct(SpaceInterface $space)
+    /**
+     * @param array<PointInterface> $points
+     */
+    public function __construct(SpaceInterface $space, array $points = [])
     {
         $this->setSpace($space);
+        $this->points = new \SplObjectStorage();
 
-        $this->storage = new \SplObjectStorage();
+        foreach ($points as $point) {
+            $this->attach($point);
+        }
     }
 
-    public function has(PointInterface $point): bool
+    public function contains(PointInterface $point): bool
     {
-        return $this->storage->contains($point);
+        return $this->points->contains($point);
     }
 
-    public function add(PointInterface $point): void
+    public function attach(PointInterface $point): void
     {
-        if ($point->getSpace() !== $this->getSpace()) {
+        if (! $point->belongsTo($this->getSpace())) {
             throw new \InvalidArgumentException(
-                "Cannot add point to collection: point space is not same as collection space"
+                "Cannot add point to collection: point doesn't belong to the same space as collection"
             );
         }
 
-        $this->storage->attach($point);
+        $this->points->attach($point);
     }
 
-    public function remove(PointInterface $point): void
+    public function detach(PointInterface $point): void
     {
-        $this->storage->detach($point);
+        $this->points->detach($point);
     }
 
-    public function current()
+    public function current(): PointInterface
     {
-        return $this->storage->current();
+        return $this->points->current();
     }
 
-    public function key()
+    public function key(): int
     {
-        return $this->storage->key();
+        return $this->points->key();
     }
 
     public function next(): void
     {
-        $this->storage->next();
+        $this->points->next();
     }
 
     public function rewind(): void
     {
-        $this->storage->rewind();
+        $this->points->rewind();
     }
 
     public function valid(): bool
     {
-        return $this->storage->valid();
+        return $this->points->valid();
     }
 
     public function count(): int
     {
-        return count($this->storage);
+        return count($this->points);
     }
 }

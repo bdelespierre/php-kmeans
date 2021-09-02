@@ -1,15 +1,12 @@
 <?php
 
-namespace Bdelespierre\Kmeans\Interfaces;
+namespace Kmeans\Interfaces;
 
-use Bdelespierre\Kmeans\Interfaces\InterfPointInterface;
-use Bdelespierre\Kmeans\Interfaces\PointCollectionInterface;
-use Bdelespierre\Kmeans\Interfaces\PointInterface;
-use Bdelespierre\Kmeans\Interfaces\SpaceInterface;
-
-interface ClusterInterface
+interface ClusterInterface extends SpaceBoundInterface
 {
     public function getCentroid(): PointInterface;
+
+    public function setCentroid(PointInterface $point): void;
 
     public function getPoints(): PointCollectionInterface;
 

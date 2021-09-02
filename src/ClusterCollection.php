@@ -1,31 +1,40 @@
 <?php
 
-namespace Bdelespierre\Kmeans;
+namespace Kmeans;
 
-use Bdelespierre\Kmeans\Concerns\HasSpaceTrait;
-use Bdelespierre\Kmeans\Interfaces\ClusterCollectionInterface;
-use Bdelespierre\Kmeans\Interfaces\ClusterInterface;
-use Bdelespierre\Kmeans\Interfaces\SpaceInterface;
+use Kmeans\Concerns\HasSpaceTrait;
+use Kmeans\Interfaces\ClusterCollectionInterface;
+use Kmeans\Interfaces\ClusterInterface;
+use Kmeans\Interfaces\SpaceInterface;
 
 class ClusterCollection implements ClusterCollectionInterface
 {
     use HasSpaceTrait;
 
-    protected \SplObjectStorage $storage;
+    /**
+     * @var \SplObjectStorage<ClusterInterface, null>
+     */
+    protected \SplObjectStorage $clusters;
 
-    public function __construct(SpaceInterface $space)
+    /**
+     * @param array<ClusterInterface> $clusters
+     */
+    public function __construct(SpaceInterface $space, array $clusters = [])
     {
         $this->setSpace($space);
+        $this->clusters = new \SplObjectStorage();
 
-        $this->storage = new \SplObjectStorage();
+        foreach ($clusters as $cluster) {
+            $this->attach($cluster);
+        }
     }
 
-    public function has(ClusterInterface $cluster): bool
+    public function contains(ClusterInterface $cluster): bool
     {
-        return $this->storage->contains($cluster);
+        return $this->clusters->contains($cluster);
     }
 
-    public function add(ClusterInterface $cluster): void
+    public function attach(ClusterInterface $cluster): void
     {
         if ($cluster->getCentroid()->getSpace() !== $this->getSpace()) {
             throw new \InvalidArgumentException(
@@ -33,41 +42,41 @@ class ClusterCollection implements ClusterCollectionInterface
             );
         }
 
-        $this->storage->attach($cluster);
+        $this->clusters->attach($cluster);
     }
 
-    public function remove(ClusterInterface $cluster): void
+    public function detach(ClusterInterface $cluster): void
     {
-        $this->storage->detach($cluster);
+        $this->clusters->detach($cluster);
     }
 
     public function current()
     {
-        return $this->storage->current();
+        return $this->clusters->current();
     }
 
     public function key()
     {
-        return $this->storage->key();
+        return $this->clusters->key();
     }
 
     public function next(): void
     {
-        $this->storage->next();
+        $this->clusters->next();
     }
 
     public function rewind(): void
     {
-        $this->storage->rewind();
+        $this->clusters->rewind();
     }
 
     public function valid(): bool
     {
-        return $this->storage->valid();
+        return $this->clusters->valid();
     }
 
     public function count(): int
     {
-        return count($this->storage);
+        return count($this->clusters);
     }
 }

@@ -1,18 +1,21 @@
 <?php
 
-namespace Bdelespierre\Kmeans\Interfaces;
+namespace Kmeans\Interfaces;
 
-use Bdelespierre\Kmeans\Interfaces\SpaceInterface;
-
-interface PointInterface
+interface PointInterface extends SpaceBoundInterface
 {
-    public function getSpace(): SpaceInterface;
-
+    /**
+     * @return array<float>
+     */
     public function getCoordinates(): array;
 
-    public function setCoordinates(array $coordinates): void;
-
+    /**
+     * @return mixed
+     */
     public function getData();
 
+    /**
+     * @param mixed $data
+     */
     public function setData($data): void;
 }

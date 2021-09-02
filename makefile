@@ -5,7 +5,7 @@
 
 qa: phplint phpcs phpstan
 
-QA_PATHS = src/
+QA_PATHS = src/ tests/
 QA_STANDARD = psr12
 
 phplint:
@@ -28,8 +28,4 @@ todolist:
 # -----------------------------------------------------------------------------
 
 test:
-	vendor/bin/phpunit
-
-.PHONY: coverage
-coverage:
-	vendor/bin/phpunit --coverage-html coverage
+	vendor/bin/phpunit --colors

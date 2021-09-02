@@ -1,11 +1,8 @@
 <?php
 
-namespace Bdelespierre\Kmeans\Interfaces;
-
-use Bdelespierre\Kmeans\Interfaces\ClusterCollectionInterface;
-use Bdelespierre\Kmeans\Interfaces\PointCollectionInterface;
+namespace Kmeans\Interfaces;
 
 interface AlgorithmInterface
 {
-    public function run(PointCollectionInterface $points, int $clusterCount): ClusterCollectionInterface;
+    public function clusterize(PointCollectionInterface $points, int $nbClusters): ClusterCollectionInterface;
 }

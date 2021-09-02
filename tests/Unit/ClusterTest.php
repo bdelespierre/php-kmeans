@@ -2,108 +2,161 @@
 
 namespace Tests\Unit;
 
-use Bdelespierre\Kmeans\Cluster;
-use Bdelespierre\Kmeans\Point;
-use Bdelespierre\Kmeans\PointCollection;
-use Bdelespierre\Kmeans\Space;
+use Kmeans\Cluster;
+use Kmeans\Point;
+use Kmeans\PointCollection;
+use Kmeans\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bdelespierre\Kmeans\Cluster
- * @uses Bdelespierre\Kmeans\Space
- * @uses Bdelespierre\Kmeans\Point
- * @uses Bdelespierre\Kmeans\PointCollection
+ * @coversDefaultClass \Kmeans\Cluster
+ * @uses \Kmeans\Space
+ * @uses \Kmeans\Point
+ * @uses \Kmeans\PointCollection
  */
 class ClusterTest extends TestCase
 {
+    private Space $space;
+    /** @var array<Point> */
+    private array $pointsArray;
+    private Point $centroid;
+    private PointCollection $points;
+    private Cluster $cluster;
+
+    public function setUp(): void
+    {
+        $this->space = new Space(2);
+
+        $this->pointsArray = array_map(
+            fn ($i) => new Point($this->space, [$i, $i]),
+            range(1, 10)
+        );
+
+        $this->points = new PointCollection(
+            $this->space,
+            $this->pointsArray
+        );
+
+        $this->centroid = new Point($this->space, [0, 0]);
+
+        $this->cluster = new Cluster(
+            $this->centroid,
+            $this->points
+        );
+    }
+
+    public function tearDown(): void
+    {
+        unset(
+            $this->space,
+            $this->pointsArray,
+            $this->points,
+            $this->centroid,
+            $this->cluster,
+        );
+    }
+
     /**
      * @covers ::__construct
+     * @covers ::getSpace
+     * @covers ::setCentroid
+     * @covers ::belongsTo
+     */
+    public function testBelongsTo(): void
+    {
+        $this->assertTrue(
+            $this->cluster->belongsTo($this->space)
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getSpace
+     * @covers ::setCentroid
      * @covers ::getCentroid
      */
-    public function testGetCentroid()
+    public function testGetCentroid(): void
     {
-        $space = new Space(2);
-        $centroid = new Point($space, [0,0]);
-        $cluster = new Cluster($centroid, new PointCollection($space));
+        $this->assertSame(
+            $this->centroid,
+            $this->cluster->getCentroid()
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getSpace
+     * @covers ::setCentroid
+     * @covers ::getCentroid
+     */
+    public function testSetCentroid(): void
+    {
+        $this->cluster->setCentroid(
+            $centroid = new Point($this->space, [1, 1])
+        );
 
         $this->assertSame(
             $centroid,
-            $cluster->getCentroid()
+            $this->cluster->getCentroid()
         );
     }
 
     /**
      * @covers ::__construct
+     * @covers ::getSpace
+     * @covers ::setCentroid
+     * @covers ::getCentroid
+     */
+    public function testSetCentroidFailsWithInvalidCentroid(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessageMatches('/^Cannot set centroid/');
+
+        $this->cluster->setCentroid(
+            new Point(new Space(3), [2, 2, 2])
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getSpace
+     * @covers ::setCentroid
      * @covers ::getPoints
      */
-    public function testGetPoints()
+    public function testGetPoints(): void
     {
-        $space = new Space(2);
-        $centroid = new Point($space, [0,0]);
-        $collection = new PointCollection($space);
-        $cluster = new Cluster($centroid, $collection);
-
-        foreach (range(1, 10) as $i) {
-            $collection->add(
-                new Point($space, [0,$i])
-            );
-        }
-
-        $this->assertCount(
-            10,
-            $cluster->getPoints()
-        );
+        $this->assertCount(10, $this->cluster->getPoints());
     }
 
     /**
      * @covers ::__construct
+     * @covers ::getSpace
+     * @covers ::setCentroid
      * @covers ::attach
      * @covers ::getPoints
      */
-    public function testAttach()
+    public function testAttach(): void
     {
-        $space = new Space(2);
-        $centroid = new Point($space, [0,0]);
-        $cluster = new Cluster($centroid);
-
-        foreach (range(1, 10) as $i) {
-            $cluster->attach(
-                new Point($space, [0,$i])
-            );
-        }
-
-        $this->assertCount(
-            10,
-            $cluster->getPoints()
+        $this->cluster->attach(
+            new Point($this->space, [11, 11])
         );
+
+        $this->assertCount(11, $this->cluster->getPoints());
     }
 
     /**
      * @covers ::__construct
+     * @covers ::getSpace
+     * @covers ::setCentroid
      * @covers ::detach
      * @covers ::getPoints
      */
-    public function testDetach()
+    public function testDetach(): void
     {
-        $space = new Space(2);
-        $centroid = new Point($space, [0,0]);
-        $collection = new PointCollection($space);
-        $cluster = new Cluster($centroid, $collection);
-
-        $pointA = new Point($space, [1,1]);
-        $pointB = new Point($space, [2,2]);
-        $pointC = new Point($space, [3,3]);
-
-        $collection->add($pointA);
-        $collection->add($pointB);
-        $collection->add($pointC);
-
-        $cluster->detach($pointA);
-        $cluster->detach($pointC);
-
-        $this->assertCount(
-            1,
-            $cluster->getPoints()
+        $this->cluster->detach(
+            $this->pointsArray[array_rand($this->pointsArray)]
         );
+
+        $this->assertCount(9, $this->cluster->getPoints());
     }
 }
