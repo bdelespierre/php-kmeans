@@ -7,5 +7,5 @@ use Bdelespierre\Kmeans\Interfaces\PointCollectionInterface;
 
 interface AlgorithmInterface
 {
-    public function run(PointCollectionInterface $points, int $clusterCount): ClusterCollectionInterface;
+    public function clusterize(PointCollectionInterface $points, int $clusterCount): ClusterCollectionInterface;
 }
