@@ -1,17 +1,15 @@
 <?php
 
-namespace Bdelespierre\Kmeans\Interfaces;
+namespace Kmeans\Interfaces;
 
-use Bdelespierre\Kmeans\Interfaces\SpaceInterface;
-use Bdelespierre\Kmeans\Interfaces\PointInterface;
-
-interface PointCollectionInterface extends \Iterator, \Countable
+/**
+ * @extends \Iterator<PointInterface>
+ */
+interface PointCollectionInterface extends SpaceBoundInterface, \Iterator, \Countable
 {
-    public function getSpace(): SpaceInterface;
+    public function contains(PointInterface $point): bool;
 
-    public function has(PointInterface $point): bool;
+    public function attach(PointInterface $point): void;
 
-    public function add(PointInterface $point): void;
-
-    public function remove(PointInterface $point): void;
+    public function detach(PointInterface $point): void;
 }

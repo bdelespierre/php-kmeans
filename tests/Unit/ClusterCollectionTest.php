@@ -2,29 +2,51 @@
 
 namespace Tests\Unit;
 
-use Bdelespierre\Kmeans\Cluster;
-use Bdelespierre\Kmeans\ClusterCollection;
-use Bdelespierre\Kmeans\Interfaces\ClusterInterface;
-use Bdelespierre\Kmeans\Point;
-use Bdelespierre\Kmeans\Space;
+use Kmeans\Cluster;
+use Kmeans\ClusterCollection;
+use Kmeans\Interfaces\ClusterInterface;
+use Kmeans\Point;
+use Kmeans\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bdelespierre\Kmeans\ClusterCollection
- * @uses Bdelespierre\Kmeans\Space
- * @uses Bdelespierre\Kmeans\Cluster
- * @uses Bdelespierre\Kmeans\Point
- * @uses Bdelespierre\Kmeans\PointCollection
+ * @coversDefaultClass \Kmeans\ClusterCollection
+ * @uses \Kmeans\Space
+ * @uses \Kmeans\Cluster
+ * @uses \Kmeans\Point
+ * @uses \Kmeans\PointCollection
  */
 class ClusterCollectionTest extends TestCase
 {
     /**
      * @covers ::__construct
-     * @covers ::add
-     * @covers ::has
-     * @covers ::remove
+     * @covers ::getSpace
+     * @covers ::attach
+     * @covers ::contains
      */
-    public function testAddingAndRemovingClustersFromCollection()
+    public function testConstructingClusterWithPoints(): void
+    {
+        $space = new Space(1);
+        $point = new Point($space, [1]);
+        $cluster = new Cluster($point);
+        $collection = new ClusterCollection($space, [$cluster]);
+
+        $this->assertTrue(
+            $collection->contains($cluster)
+        );
+
+        $this->assertFalse(
+            $collection->contains(new Cluster($point))
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::attach
+     * @covers ::contains
+     * @covers ::detach
+     */
+    public function testAddingAndRemovingClustersFromCollection(): void
     {
         $space = new Space(4);
         $collection = new ClusterCollection($space);
@@ -33,22 +55,33 @@ class ClusterCollectionTest extends TestCase
         $clusterB = new Cluster(new Point($space, [5,6,7,8]));
         $clusterC = new Cluster(new Point($space, [9,0,1,2]));
 
-        $collection->add($clusterA);
-        $collection->add($clusterC);
+        $collection->attach($clusterA);
+        $collection->attach($clusterC);
 
-        $this->assertTrue($collection->has($clusterA));
-        $this->assertFalse($collection->has($clusterB));
-        $this->assertTrue($collection->has($clusterC));
+        $this->assertTrue(
+            $collection->contains($clusterA)
+        );
 
-        $collection->remove($clusterC);
-        $this->assertFalse($collection->has($clusterC));
+        $this->assertFalse(
+            $collection->contains($clusterB)
+        );
+
+        $this->assertTrue(
+            $collection->contains($clusterC)
+        );
+
+        $collection->detach($clusterC);
+
+        $this->assertFalse(
+            $collection->contains($clusterC)
+        );
     }
 
     /**
      * @covers ::__construct
-     * @covers ::add
+     * @covers ::attach
      */
-    public function testAddingInvalidClusterToCollection()
+    public function testAddingInvalidClusterToCollection(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -58,16 +91,16 @@ class ClusterCollectionTest extends TestCase
         $collection = new ClusterCollection($spaceA);
         $cluster = new Cluster(new Point($spaceB, [1, 2, 3]));
 
-        $collection->add($cluster);
+        $collection->attach($cluster);
     }
 
     /**
      * @covers ::__construct
-     * @covers ::add
-     * @covers ::remove
+     * @covers ::attach
+     * @covers ::detach
      * @covers ::count
      */
-    public function testCount()
+    public function testCount(): void
     {
         $space = new Space(4);
         $collection = new ClusterCollection($space);
@@ -76,32 +109,32 @@ class ClusterCollectionTest extends TestCase
         $clusterB = new Cluster(new Point($space, [5,6,7,8]));
         $clusterC = new Cluster(new Point($space, [9,0,1,2]));
 
-        $collection->add($clusterA);
-        $collection->add($clusterB);
-        $collection->add($clusterC);
+        $collection->attach($clusterA);
+        $collection->attach($clusterB);
+        $collection->attach($clusterC);
 
         $this->assertEquals(3, count($collection));
 
-        $collection->remove($clusterA);
+        $collection->detach($clusterA);
         $this->assertEquals(2, count($collection));
 
-        $collection->remove($clusterB);
+        $collection->detach($clusterB);
         $this->assertEquals(1, count($collection));
 
-        $collection->remove($clusterC);
+        $collection->detach($clusterC);
         $this->assertEquals(0, count($collection));
     }
 
     /**
      * @covers ::__construct
-     * @covers ::add
+     * @covers ::attach
      * @covers ::current
      * @covers ::key
      * @covers ::next
      * @covers ::rewind
      * @covers ::valid
      */
-    public function testIterator()
+    public function testIterator(): void
     {
         $space = new Space(4);
         $collection = new ClusterCollection($space);
@@ -110,9 +143,9 @@ class ClusterCollectionTest extends TestCase
         $clusterB = new Cluster(new Point($space, [5,6,7,8]));
         $clusterC = new Cluster(new Point($space, [9,0,1,2]));
 
-        $collection->add($clusterA);
-        $collection->add($clusterB);
-        $collection->add($clusterC);
+        $collection->attach($clusterA);
+        $collection->attach($clusterB);
+        $collection->attach($clusterC);
 
         $iterations = 0;
         foreach ($collection as $i => $cluster) {

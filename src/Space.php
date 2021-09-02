@@ -1,17 +1,20 @@
 <?php
 
-namespace Bdelespierre\Kmeans;
+namespace Kmeans;
 
-use Bdelespierre\Kmeans\Interfaces\SpaceInterface;
+use Kmeans\Interfaces\SpaceInterface;
 
 class Space implements SpaceInterface
 {
-    protected $dimensions;
+    /**
+     * @var int<1, max>
+     */
+    protected int $dimensions;
 
     public function __construct(int $dimensions)
     {
         if ($dimensions < 1) {
-            throw new \LogicException("Dimensions cannot be null or negative");
+            throw new \InvalidArgumentException("Invalid space dimentions: {$dimensions}");
         }
 
         $this->dimensions = $dimensions;
@@ -20,5 +23,10 @@ class Space implements SpaceInterface
     public function getDimensions(): int
     {
         return $this->dimensions;
+    }
+
+    public function isEqualTo(SpaceInterface $space): bool
+    {
+        return $this->getDimensions() == $space->getDimensions();
     }
 }

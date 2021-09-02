@@ -2,11 +2,11 @@
 
 namespace Tests\Unit;
 
-use Bdelespierre\Kmeans\Space;
+use Kmeans\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bdelespierre\Kmeans\Space
+ * @coversDefaultClass \Kmeans\Space
  */
 class SpaceTest extends TestCase
 {
@@ -14,7 +14,7 @@ class SpaceTest extends TestCase
      * @covers ::__construct
      * @covers ::getDimensions
      */
-    public function testGetDimensions()
+    public function testGetDimensions(): void
     {
         $space = new Space(1);
 
@@ -32,10 +32,26 @@ class SpaceTest extends TestCase
     /**
      * @covers ::__construct
      */
-    public function testInvalidSpaceDimensions()
+    public function testInvalidSpaceDimensions(): void
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         $space = new Space(0);
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::isEqualTo
+     * @covers ::getDimensions
+     */
+    public function testIsEqualTo(): void
+    {
+        $this->assertTrue(
+            (new Space(1))->isEqualTo(new Space(1))
+        );
+
+        $this->assertFalse(
+            (new Space(1))->isEqualTo(new Space(2))
+        );
     }
 }

@@ -2,122 +2,165 @@
 
 namespace Tests\Unit;
 
-use Bdelespierre\Kmeans\Interfaces\PointCollectionInterface;
-use Bdelespierre\Kmeans\Interfaces\PointInterface;
-use Bdelespierre\Kmeans\Point;
-use Bdelespierre\Kmeans\PointCollection;
-use Bdelespierre\Kmeans\Space;
+use Kmeans\Interfaces\PointCollectionInterface;
+use Kmeans\Interfaces\PointInterface;
+use Kmeans\Point;
+use Kmeans\PointCollection;
+use Kmeans\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Bdelespierre\Kmeans\PointCollection
- * @uses Bdelespierre\Kmeans\Space
- * @uses Bdelespierre\Kmeans\Point
+ * @coversDefaultClass \Kmeans\PointCollection
+ * @uses \Kmeans\Space
+ * @uses \Kmeans\Point
  */
 class PointCollectionTest extends TestCase
 {
-    /**
-     * @covers ::__construct
-     * @covers ::add
-     * @covers ::has
-     * @covers ::remove
-     */
-    public function testAddingPointsToCollection()
+    private Space $space;
+    /** @var array<Point> */
+    private array $pointsArray;
+    private PointCollection $points;
+
+    public function setUp(): void
     {
-        $space = new Space(4);
-        $collection = new PointCollection($space);
+        $this->space = new Space(2);
 
-        $pointA = new Point($space, [1,2,3,4]);
-        $pointB = new Point($space, [5,6,7,8]);
-        $pointC = new Point($space, [9,0,1,2]);
+        $this->pointsArray = array_map(
+            fn ($i) => new Point($this->space, [$i, $i]),
+            range(1, 10)
+        );
 
-        $collection->add($pointA);
-        $collection->add($pointC);
+        $this->points = new PointCollection(
+            $this->space,
+            $this->pointsArray
+        );
+    }
 
-        $this->assertTrue($collection->has($pointA));
-        $this->assertFalse($collection->has($pointB));
-        $this->assertTrue($collection->has($pointC));
-
-        $collection->remove($pointC);
-        $this->assertFalse($collection->has($pointC));
+    public function tearDown(): void
+    {
+        unset(
+            $this->space,
+            $this->pointsArray,
+            $this->points,
+        );
     }
 
     /**
      * @covers ::__construct
-     * @covers ::add
-     */
-    public function testAddPointFails()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $spaceA = new Space(2);
-        $spaceB = new Space(3);
-
-        $collection = new PointCollection($spaceA);
-        $point = new Point($spaceB, [1, 2, 3]);
-
-        $collection->add($point);
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::add
-     * @covers ::remove
+     * @covers ::attach
      * @covers ::count
      */
-    public function testCount()
+    public function testAttach(): void
     {
-        $space = new Space(4);
-        $collection = new PointCollection($space);
+        $this->points->attach(
+            new Point($this->space, [11, 11])
+        );
 
-        $pointA = new Point($space, [1,2,3,4]);
-        $pointB = new Point($space, [5,6,7,8]);
-        $pointC = new Point($space, [9,0,1,2]);
-
-        $collection->add($pointA);
-        $collection->add($pointB);
-        $collection->add($pointC);
-
-        $this->assertEquals(3, count($collection));
-
-        $collection->remove($pointA);
-        $this->assertEquals(2, count($collection));
-
-        $collection->remove($pointB);
-        $this->assertEquals(1, count($collection));
-
-        $collection->remove($pointC);
-        $this->assertEquals(0, count($collection));
+        $this->assertCount(11, $this->points);
     }
 
     /**
      * @covers ::__construct
-     * @covers ::add
+     * @covers ::attach
+     * @covers ::count
+     */
+    public function testAttachTwiceHasNoEffect(): void
+    {
+        $this->points->attach(
+            $point = new Point($this->space, [11, 11])
+        );
+
+        $this->points->attach($point);
+
+        $this->assertCount(11, $this->points);
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::attach
+     * @covers ::count
+     */
+    public function testAttachInvalidPointFails(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/^Cannot add point to collection/');
+
+        $this->points->attach(
+            $point = new Point(new Space(3), [11, 11, 11])
+        );
+
+        $this->points->attach($point);
+
+        $this->assertCount(11, $this->points);
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::contains
+     * @covers ::attach
+     */
+    public function testContains(): void
+    {
+        $this->assertTrue(
+            $this->points->contains(
+                $this->pointsArray[array_rand($this->pointsArray)]
+            )
+        );
+
+        $this->assertFalse(
+            $this->points->contains(
+                new Point($this->space, [11, 11])
+            )
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::attach
+     * @covers ::detach
+     * @covers ::count
+     */
+    public function testDetach(): void
+    {
+        $this->points->detach(
+            $this->pointsArray[array_rand($this->pointsArray)]
+        );
+
+        $this->assertCount(9, $this->points);
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::attach
+     * @covers ::detach
+     * @covers ::count
+     */
+    public function testDetachTwiceHasNoEffect(): void
+    {
+        $this->points->detach(
+            $point = $this->pointsArray[array_rand($this->pointsArray)]
+        );
+
+        $this->points->detach($point);
+
+        $this->assertCount(9, $this->points);
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::attach
      * @covers ::current
      * @covers ::key
      * @covers ::next
      * @covers ::rewind
      * @covers ::valid
      */
-    public function testIterator()
+    public function testIteration(): void
     {
-        $space = new Space(4);
-        $collection = new PointCollection($space);
-
-        $pointA = new Point($space, [1,2,3,4]);
-        $pointB = new Point($space, [5,6,7,8]);
-        $pointC = new Point($space, [9,0,1,2]);
-
-        $collection->add($pointA);
-        $collection->add($pointB);
-        $collection->add($pointC);
-
-        $iterations = 0;
-        foreach ($collection as $i => $point) {
-            $this->assertInstanceof(PointInterface::class, $point);
-            $iterations++;
+        foreach ($this->points as $key => $point) {
+            $this->assertTrue(
+                array_search($point, $this->pointsArray, true) !== false
+            );
         }
-
-        $this->assertEquals(3, $iterations);
     }
 }

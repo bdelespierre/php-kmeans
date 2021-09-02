@@ -1,17 +1,15 @@
 <?php
 
-namespace Bdelespierre\Kmeans\Interfaces;
+namespace Kmeans\Interfaces;
 
-use Bdelespierre\Kmeans\Interfaces\ClusterInterface;
-use Bdelespierre\Kmeans\Interfaces\SpaceInterface;
-
-interface ClusterCollectionInterface extends \Iterator, \Countable
+/**
+ * @extends \Iterator<ClusterInterface>
+ */
+interface ClusterCollectionInterface extends SpaceBoundInterface, \Iterator, \Countable
 {
-    public function getSpace(): SpaceInterface;
+    public function contains(ClusterInterface $cluster): bool;
 
-    public function has(ClusterInterface $cluster): bool;
+    public function attach(ClusterInterface $cluster): void;
 
-    public function add(ClusterInterface $cluster): void;
-
-    public function remove(ClusterInterface $cluster): void;
+    public function detach(ClusterInterface $cluster): void;
 }
