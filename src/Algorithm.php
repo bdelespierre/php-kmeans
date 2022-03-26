@@ -98,12 +98,12 @@ class Algorithm implements AlgorithmInterface
 
     protected function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float
     {
-        return euclidean_dist($pointA->getCoordinates(), $pointB->getCoordinates());
+        return Math::euclideanDist($pointA->getCoordinates(), $pointB->getCoordinates());
     }
 
     protected function findCentroid(PointCollectionInterface $points): PointInterface
     {
-        return new Point($points->getSpace(), find_centroid(
+        return new Point($points->getSpace(), Math::centroid(
             array_map(fn ($point) => $point->getCoordinates(), iterator_to_array($points))
         ));
     }

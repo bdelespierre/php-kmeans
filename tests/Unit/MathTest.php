@@ -2,17 +2,17 @@
 
 namespace Tests\Unit;
 
+use Kmeans\Math;
+use Kmeans\findCentroid;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @coversDefaultClass \Kmeans\Math
+ */
 class MathTest extends TestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        require_once __DIR__ . '/../../src/math.php';
-    }
-
     /**
-     * @covers euclidean_dist
+     * @covers ::euclideanDist
      * @dataProvider euclidianDistanceDataProvider
      * @param array<float> $a
      * @param array<float> $b
@@ -20,7 +20,7 @@ class MathTest extends TestCase
      */
     public function testEuclideanDist(array $a, array $b, float $dist): void
     {
-        $this->assertEquals(round($dist, 6), round(euclidean_dist($a, $b), 6));
+        $this->assertEquals(round($dist, 6), round(Math::euclideanDist($a, $b), 6));
     }
 
     /**
@@ -42,14 +42,14 @@ class MathTest extends TestCase
     }
 
     /**
-     * @covers find_centroid
+     * @covers ::centroid
      * @dataProvider centroidDataProvider
      * @param array<float> $centroid
      * @param array<float> ...$points
      */
     public function testFindCentroid(array $centroid, array ...$points): void
     {
-        $this->assertEquals($centroid, find_centroid($points));
+        $this->assertEquals($centroid, Math::centroid($points));
     }
 
     /**
@@ -91,14 +91,14 @@ class MathTest extends TestCase
     }
 
     /**
-     * @covers generate_gaussian_noise
+     * @covers ::gaussianNoise
      * @dataProvider gaussianNoiseDataProvider
      */
     public function testGenerateGaussianNoise(float $mu, float $sigma = 1, float $nb = 1e3): void
     {
         // let's generate $nb numbers and sum them
         for ($sum = 0, $i = 0; $i < $nb; $i++) {
-            $sum += array_sum(generate_gaussian_noise($mu, $sigma));
+            $sum += array_sum(Math::gaussianNoise($mu, $sigma));
         }
 
         // cumpute the mean (which should be $mu)
