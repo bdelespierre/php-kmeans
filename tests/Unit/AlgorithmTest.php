@@ -10,6 +10,7 @@ use Kmeans\Interfaces\ClusterCollectionInterface;
 use Kmeans\Interfaces\InitializationSchemeInterface;
 use Kmeans\Interfaces\PointCollectionInterface;
 use Kmeans\Interfaces\SpaceInterface;
+use Kmeans\Math;
 use Kmeans\Point;
 use Kmeans\PointCollection;
 use Kmeans\Space;
@@ -23,6 +24,7 @@ use PHPUnit\Framework\TestCase;
  * @uses \Kmeans\Point
  * @uses \Kmeans\PointCollection
  * @uses \Kmeans\Space
+ * @uses \Kmeans\Math
  */
 class AlgorithmTest extends TestCase
 {
@@ -47,9 +49,9 @@ class AlgorithmTest extends TestCase
      * @covers ::getDistanceBetween
      * @covers ::invokeIterationCallbacks
      * @covers ::iterate
-     * @covers euclidean_dist
-     * @covers find_centroid
-     * @covers generate_gaussian_noise
+     * @covers \Kmeans\Math::euclideanDist
+     * @covers \Kmeans\Math::centroid
+     * @covers \Kmeans\Math::gaussianNoise
      * @param int<0, max> $dimensions
      * @param array<array<float>> $expected
      * @param array<array<float>> $initialClusterCentroids
@@ -87,7 +89,7 @@ class AlgorithmTest extends TestCase
         foreach ($expected as $n => $expectedCentroid) {
             // assert found cluster centroids are in the vicinity
             // of expected centroids
-            $this->assertLessThan(1, euclidean_dist(
+            $this->assertLessThan(1, Math::euclideanDist(
                 $expectedCentroid,
                 $resultClusters[$n]->getCentroid()->getCoordinates()
             ));
@@ -167,7 +169,7 @@ class AlgorithmTest extends TestCase
      * @covers ::invokeIterationCallbacks
      * @covers ::getClosestCluster
      * @covers ::getDistanceBetween
-     * @covers euclidean_dist
+     * @covers \Kmeans\Math::euclideanDist
      */
     public function testIterationCallback(): void
     {
@@ -213,7 +215,7 @@ class AlgorithmTest extends TestCase
                 $coordinates = $centroid;
 
                 foreach ($coordinates as &$n) {
-                    list($n) = generate_gaussian_noise($n, $radius);
+                    list($n) = Math::gaussianNoise($n, $radius);
                 }
 
                 $points->attach(new Point($space, $coordinates));

@@ -27,10 +27,7 @@
     "autoload": {
         "psr-4": {
             "Kmeans\\": "src/"
-        },
-        "files": [
-            "src/math.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
