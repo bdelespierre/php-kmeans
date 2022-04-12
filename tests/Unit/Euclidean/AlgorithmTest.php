@@ -1,30 +1,31 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Euclidean;
 
-use Kmeans\Algorithm;
 use Kmeans\Cluster;
 use Kmeans\ClusterCollection;
+use Kmeans\Euclidean\Algorithm;
+use Kmeans\Euclidean\Point;
+use Kmeans\Euclidean\Space;
 use Kmeans\Interfaces\AlgorithmInterface;
 use Kmeans\Interfaces\ClusterCollectionInterface;
 use Kmeans\Interfaces\InitializationSchemeInterface;
 use Kmeans\Interfaces\PointCollectionInterface;
 use Kmeans\Interfaces\SpaceInterface;
 use Kmeans\Math;
-use Kmeans\Point;
 use Kmeans\PointCollection;
-use Kmeans\Space;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Kmeans\Algorithm
+ * @covers \Kmeans\Euclidean\Algorithm
+ * @covers \Kmeans\Algorithm
  * @uses \Kmeans\Cluster
  * @uses \Kmeans\ClusterCollection
- * @uses \Kmeans\Point
- * @uses \Kmeans\PointCollection
- * @uses \Kmeans\Space
+ * @uses \Kmeans\Euclidean\Point
+ * @uses \Kmeans\Euclidean\Space
  * @uses \Kmeans\Math
+ * @uses \Kmeans\PointCollection
  */
 class AlgorithmTest extends TestCase
 {
@@ -45,16 +46,6 @@ class AlgorithmTest extends TestCase
 
     /**
      * @dataProvider clusterizeDataProvider
-     * @covers ::__construct
-     * @covers ::clusterize
-     * @covers ::findCentroid
-     * @covers ::getClosestCluster
-     * @covers ::getDistanceBetween
-     * @covers ::invokeIterationCallbacks
-     * @covers ::iterate
-     * @covers \Kmeans\Math::euclideanDist
-     * @covers \Kmeans\Math::centroid
-     * @covers \Kmeans\Math::gaussianNoise
      * @param int<0, max> $dimensions
      * @param array<array<float>> $expected
      * @param array<array<float>> $initialClusterCentroids
@@ -105,10 +96,6 @@ class AlgorithmTest extends TestCase
         }
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::clusterize
-     */
     public function testClusterizeFailsWhenClusterInitializationFails(): void
     {
         /** @var InitializationSchemeInterface */
@@ -126,16 +113,6 @@ class AlgorithmTest extends TestCase
         (new Algorithm($initScheme))->clusterize(new PointCollection(new Space(1)), 1);
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::registerIterationCallback
-     * @covers ::clusterize
-     * @covers ::iterate
-     * @covers ::invokeIterationCallbacks
-     * @covers ::getClosestCluster
-     * @covers ::getDistanceBetween
-     * @covers \Kmeans\Math::euclideanDist
-     */
     public function testIterationCallback(): void
     {
         $space = new Space(1);

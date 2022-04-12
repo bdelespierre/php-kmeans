@@ -11,7 +11,7 @@ use Kmeans\Interfaces\InitializationSchemeInterface;
 use Kmeans\Interfaces\PointCollectionInterface;
 use Kmeans\Interfaces\PointInterface;
 
-class Algorithm implements AlgorithmInterface
+abstract class Algorithm implements AlgorithmInterface
 {
     private InitializationSchemeInterface $initScheme;
 
@@ -24,6 +24,10 @@ class Algorithm implements AlgorithmInterface
     {
         $this->initScheme = $initScheme;
     }
+
+    abstract protected function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float;
+
+    abstract protected function findCentroid(PointCollectionInterface $points): PointInterface;
 
     public function registerIterationCallback(callable $callback): void
     {
@@ -46,18 +50,6 @@ class Algorithm implements AlgorithmInterface
 
         // clustering is done.
         return $clusters;
-    }
-
-    protected function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float
-    {
-        return Math::euclideanDist($pointA->getCoordinates(), $pointB->getCoordinates());
-    }
-
-    protected function findCentroid(PointCollectionInterface $points): PointInterface
-    {
-        return new Point($points->getSpace(), Math::centroid(
-            array_map(fn (PointInterface $point) => $point->getCoordinates(), iterator_to_array($points))
-        ));
     }
 
     private function iterate(ClusterCollectionInterface $clusters): bool
@@ -110,7 +102,7 @@ class Algorithm implements AlgorithmInterface
         return $closest;
     }
 
-    protected function invokeIterationCallbacks(ClusterCollectionInterface $clusters): void
+    private function invokeIterationCallbacks(ClusterCollectionInterface $clusters): void
     {
         foreach ($this->iterationCallbacks as $callback) {
             $callback($this, $clusters);

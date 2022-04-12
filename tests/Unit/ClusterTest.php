@@ -3,160 +3,100 @@
 namespace Tests\Unit;
 
 use Kmeans\Cluster;
-use Kmeans\Point;
+use Kmeans\Euclidean\Point;
+use Kmeans\Euclidean\Space;
 use Kmeans\PointCollection;
-use Kmeans\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Kmeans\Cluster
- * @uses \Kmeans\Space
- * @uses \Kmeans\Point
+ * @covers \Kmeans\Cluster
+ * @uses \Kmeans\Euclidean\Point
+ * @uses \Kmeans\Euclidean\Space
  * @uses \Kmeans\PointCollection
  */
 class ClusterTest extends TestCase
 {
-    private Space $space;
-    /** @var array<Point> */
-    private array $pointsArray;
-    private Point $centroid;
-    private PointCollection $points;
-    private Cluster $cluster;
-
-    public function setUp(): void
+    public static function makeCluster(): Cluster
     {
-        $this->space = new Space(2);
-
-        $this->pointsArray = array_map(
-            fn ($i) => new Point($this->space, [$i, $i]),
-            range(1, 10)
-        );
-
-        $this->points = new PointCollection(
-            $this->space,
-            $this->pointsArray
-        );
-
-        $this->centroid = new Point($this->space, [0, 0]);
-
-        $this->cluster = new Cluster(
-            $this->centroid,
-            $this->points
+        return new Cluster(
+            new Point(new Space(2), [3,3]),
+            PointCollectionTest::makePointCollection()
         );
     }
 
-    public function tearDown(): void
-    {
-        unset(
-            $this->space,
-            $this->pointsArray,
-            $this->points,
-            $this->centroid,
-            $this->cluster,
-        );
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getSpace
-     * @covers ::setCentroid
-     * @covers ::belongsTo
-     */
     public function testBelongsTo(): void
     {
+        $cluster = self::makeCluster();
+
         $this->assertTrue(
-            $this->cluster->belongsTo($this->space)
+            $cluster->belongsTo(new Space(2))
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::getSpace
-     * @covers ::setCentroid
-     * @covers ::getCentroid
-     */
     public function testGetCentroid(): void
     {
+        $cluster = self::makeCluster();
+
         $this->assertSame(
-            $this->centroid,
-            $this->cluster->getCentroid()
+            [3.0,3.0],
+            $cluster->getCentroid()->getCoordinates()
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::getSpace
-     * @covers ::setCentroid
-     * @covers ::getCentroid
-     */
     public function testSetCentroid(): void
     {
-        $this->cluster->setCentroid(
-            $centroid = new Point($this->space, [1, 1])
+        $cluster = self::makeCluster();
+
+        $cluster->setCentroid(
+            $centroid = new Point(new Space(2), [1,1])
         );
 
         $this->assertSame(
             $centroid,
-            $this->cluster->getCentroid()
+            $cluster->getCentroid()
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::getSpace
-     * @covers ::setCentroid
-     * @covers ::getCentroid
-     */
     public function testSetCentroidFailsWithInvalidCentroid(): void
     {
+        $cluster = self::makeCluster();
+
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessageMatches('/^Cannot set centroid/');
 
-        $this->cluster->setCentroid(
-            new Point(new Space(3), [2, 2, 2])
+        $cluster->setCentroid(
+            new Point(new Space(3), [6,6,6])
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::getSpace
-     * @covers ::setCentroid
-     * @covers ::getPoints
-     */
     public function testGetPoints(): void
     {
-        $this->assertCount(10, $this->cluster->getPoints());
+        $cluster = self::makeCluster();
+
+        $this->assertCount(5, $cluster->getPoints());
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::getSpace
-     * @covers ::setCentroid
-     * @covers ::attach
-     * @covers ::getPoints
-     */
-    public function testAttach(): void
+    public function testAttach(): Cluster
     {
-        $this->cluster->attach(
-            new Point($this->space, [11, 11])
+        $cluster = self::makeCluster();
+
+        $cluster->attach(
+            new Point(new Space(2), [6,6])
         );
 
-        $this->assertCount(11, $this->cluster->getPoints());
+        $this->assertCount(6, $cluster->getPoints());
+
+        return $cluster;
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::getSpace
-     * @covers ::setCentroid
-     * @covers ::detach
-     * @covers ::getPoints
-     */
     public function testDetach(): void
     {
-        $this->cluster->detach(
-            $this->pointsArray[array_rand($this->pointsArray)]
-        );
+        $cluster = self::makeCluster();
+        $points = iterator_to_array($cluster->getPoints());
+        $point = $points[array_rand($points)];
 
-        $this->assertCount(9, $this->cluster->getPoints());
+        $cluster->detach($point);
+
+        $this->assertCount(4, $cluster->getPoints());
     }
 }

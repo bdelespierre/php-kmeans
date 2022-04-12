@@ -4,26 +4,20 @@ namespace Tests\Unit;
 
 use Kmeans\Cluster;
 use Kmeans\ClusterCollection;
+use Kmeans\Euclidean\Point;
+use Kmeans\Euclidean\Space;
 use Kmeans\Interfaces\ClusterInterface;
-use Kmeans\Point;
-use Kmeans\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Kmeans\ClusterCollection
- * @uses \Kmeans\Space
+ * @covers \Kmeans\ClusterCollection
  * @uses \Kmeans\Cluster
- * @uses \Kmeans\Point
+ * @uses \Kmeans\Euclidean\Point
+ * @uses \Kmeans\Euclidean\Space
  * @uses \Kmeans\PointCollection
  */
 class ClusterCollectionTest extends TestCase
 {
-    /**
-     * @covers ::__construct
-     * @covers ::getSpace
-     * @covers ::attach
-     * @covers ::contains
-     */
     public function testConstructingClusterWithPoints(): void
     {
         $space = new Space(1);
@@ -40,12 +34,6 @@ class ClusterCollectionTest extends TestCase
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::attach
-     * @covers ::contains
-     * @covers ::detach
-     */
     public function testAddingAndRemovingClustersFromCollection(): void
     {
         $space = new Space(4);
@@ -77,10 +65,6 @@ class ClusterCollectionTest extends TestCase
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::attach
-     */
     public function testAddingInvalidClusterToCollection(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -94,12 +78,6 @@ class ClusterCollectionTest extends TestCase
         $collection->attach($cluster);
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::attach
-     * @covers ::detach
-     * @covers ::count
-     */
     public function testCount(): void
     {
         $space = new Space(4);
@@ -125,15 +103,6 @@ class ClusterCollectionTest extends TestCase
         $this->assertEquals(0, count($collection));
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::attach
-     * @covers ::current
-     * @covers ::key
-     * @covers ::next
-     * @covers ::rewind
-     * @covers ::valid
-     */
     public function testIterator(): void
     {
         $space = new Space(4);
