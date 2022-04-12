@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
  */
 class MathTest extends TestCase
 {
+    // ------------------------------------------------------------------------
+    // Euclidean Distance
+
     /**
      * @covers ::euclideanDist
      * @dataProvider euclidianDistanceDataProvider
@@ -29,17 +32,20 @@ class MathTest extends TestCase
     public function euclidianDistanceDataProvider(): \Generator
     {
         /** @var array<string> $row */
-        foreach ($this->openCsv('euclidean_distances_2d.csv') as $row) {
+        foreach ($this->readCsv('euclidean_distances_2d') as $row) {
             list($x1, $y1, $x2, $y2, $dist) = array_map('floatval', $row);
             yield [[$x1, $y1], [$x2, $y2], $dist];
         }
 
         /** @var array<string> $row */
-        foreach ($this->openCsv('euclidean_distances_3d.csv') as $row) {
+        foreach ($this->readCsv('euclidean_distances_3d') as $row) {
             list($x1, $y1, $z1, $x2, $y2, $z2, $dist) = array_map('floatval', $row);
             yield [[$x1, $y1, $z1], [$x2, $y2, $z2], $dist];
         }
     }
+
+    // ------------------------------------------------------------------------
+    // Centroid
 
     /**
      * @covers ::centroid
@@ -47,7 +53,7 @@ class MathTest extends TestCase
      * @param array<float> $centroid
      * @param array<float> ...$points
      */
-    public function testFindCentroid(array $centroid, array ...$points): void
+    public function testCentroid(array $centroid, array ...$points): void
     {
         $this->assertEquals($centroid, Math::centroid($points));
     }
@@ -58,43 +64,20 @@ class MathTest extends TestCase
     public function centroidDataProvider(): \Generator
     {
         /** @var array<string> $row */
-        foreach ($this->openCsv('centroids_2d.csv') as $row) {
+        foreach ($this->readCsv('centroids_2d') as $row) {
             list($x1, $y1, $x2, $y2, $x3, $y3, $x4, $y4, $cx, $cy) = array_map('floatval', $row);
             yield [[$cx, $cy], [$x1, $y1], [$x2, $y2], [$x3, $y3], [$x4, $y4]];
         }
     }
 
-    /**
-     * @return \Generator<array<array<float>>>
-     */
-    public function boundariesDataProvider(): \Generator
-    {
-        /** @var array<string> $row */
-        foreach ($this->openCsv('boundaries_2d.csv') as $row) {
-            list($x1, $y1, $x2, $y2, $x3, $y3, $x4, $y4, $x5, $y5, $ax, $ay, $bx, $by) = array_map('floatval', $row);
-            yield [[$ax, $ay], [$bx, $by], [$x1, $y1], [$x2, $y2], [$x3, $y3], [$x4, $y4], [$x5, $y5]];
-        }
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public function frandDataProvider(): array
-    {
-        return [
-            ['min' => 0, 'max' => 1],
-            ['min' => 10, 'max' => 20],
-            ['min' => 0, 'max' => 100],
-            ['min' => -100, 'max' => 100],
-            ['min' => -1e6, 'max' => 1e6],
-        ];
-    }
+    // ------------------------------------------------------------------------
+    // Gaussian Noise
 
     /**
      * @covers ::gaussianNoise
      * @dataProvider gaussianNoiseDataProvider
      */
-    public function testGenerateGaussianNoise(float $mu, float $sigma = 1, float $nb = 1e3): void
+    public function testGaussianNoise(float $mu, float $sigma = 1, float $nb = 1e3): void
     {
         // let's generate $nb numbers and sum them
         for ($sum = 0, $i = 0; $i < $nb; $i++) {
@@ -125,10 +108,79 @@ class MathTest extends TestCase
         ];
     }
 
-    private static function openCsv(string $path): \SplFileObject
+    // ------------------------------------------------------------------------
+    // Haversine
+
+    /**
+     * @covers ::haversine
+     * @dataProvider haversineDataProvider
+     * @param array{0: float, 1: float} $from
+     * @param array{0: float, 1: float} $to
+     */
+    public function testHaversine(string $label, array $from, array $to, float $expected): void
     {
-        $csv = new \SplFileObject(__DIR__ . '/../Data/' . $path);
-        $csv->setFlags(\SplFileObject::READ_CSV | \SplFileObject::SKIP_EMPTY | \SplFileObject::READ_AHEAD);
+        $obtained = Math::haversine($from, $to);
+
+        $this->assertLessThan(
+            1, // meter
+            $obtained - $expected,
+            "Haversine distance for $label should be around $expected meters",
+        );
+    }
+
+    public function haversineDataProvider(): \Generator
+    {
+        /** @var array<string> $row */
+        foreach ($this->readCsv('haversine_distances') as $row) {
+            $label = array_shift($row);
+            $row = array_map('floatval', $row);
+            yield [$label, [$row[0], $row[1]], [$row[2], $row[3]], $row[4]];
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    // GPS Centroid
+
+    /**
+     * @covers ::gpsCentroid
+     * @uses \Kmeans\Math::haversine
+     * @dataProvider gpsCentroidDataProvider
+     * @param array{0: float, 1: float} $expected
+     * @param array<array{0: float, 1: float}> $points
+     */
+    public function testGpsCentroid(string $label, array $expected, array $points): void
+    {
+        $obtained = Math::gpsCentroid($points);
+
+        $this->assertLessThan(
+            1,
+            Math::haversine($expected, $obtained),
+            "Centroid of $label should be near " . implode(', ', $expected),
+        );
+    }
+
+    public function gpsCentroidDataProvider(): \Generator
+    {
+        /** @var array<string> $row */
+        foreach ($this->readCsv('gps_centroid') as $row) {
+            $label = array_shift($row);
+            $points = array_chunk(array_map('floatval', $row), 2);
+            yield [$label, array_shift($points), $points];
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    // Helpers
+
+    private static function readCsv(string $path): \SplFileObject
+    {
+        $csv = new \SplFileObject(__DIR__ . "/../Data/{$path}.csv");
+
+        $csv->setFlags(
+            \SplFileObject::READ_CSV |
+            \SplFileObject::SKIP_EMPTY |
+            \SplFileObject::READ_AHEAD
+        );
 
         return $csv;
     }

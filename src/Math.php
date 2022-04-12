@@ -66,11 +66,11 @@ class Math
         return [$z0, $z1];
     }
 
-    public static int $earthRadius = 6371000;
+    public static int $earthRadius = 6371009; // meters
 
     /**
-     * Calculates the great-circle distance between two points, with
-     * the Haversine formula.
+     * Calculates the great-circle distance (in meters) between two points,
+     * with the Haversine formula.
      *
      * @see https://stackoverflow.com/a/14751773/17403258
      *
@@ -88,7 +88,7 @@ class Math
     }
 
     /**
-     * Calculates the centroid of GPS coordinates
+     * Calculates the centroid of GPS coordinates.
      *
      * @see https://stackoverflow.com/questions/6671183
      *
@@ -105,7 +105,7 @@ class Math
 
         foreach ($points as $point) {
             $lat = deg2rad($point[0]);
-            $long = deg2rad($point[0]);
+            $long = deg2rad($point[1]);
 
             $x += cos($lat) * cos($long);
             $y += cos($lat) * sin($long);
