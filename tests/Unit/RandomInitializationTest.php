@@ -2,22 +2,22 @@
 
 namespace Tests\Unit;
 
+use Kmeans\Euclidean\Point;
+use Kmeans\Euclidean\Space;
 use Kmeans\Interfaces\InitializationSchemeInterface;
 use Kmeans\Interfaces\PointCollectionInterface;
 use Kmeans\Interfaces\SpaceInterface;
-use Kmeans\Point;
 use Kmeans\PointCollection;
 use Kmeans\RandomInitialization;
-use Kmeans\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Kmeans\RandomInitialization
- * @uses \Kmeans\Space
- * @uses \Kmeans\Point
- * @uses \Kmeans\PointCollection
  * @uses \Kmeans\Cluster
  * @uses \Kmeans\ClusterCollection
+ * @uses \Kmeans\Euclidean\Point
+ * @uses \Kmeans\Euclidean\Space
+ * @uses \Kmeans\PointCollection
  */
 class RandomInitializationTest extends TestCase
 {

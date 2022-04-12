@@ -3,11 +3,10 @@
 namespace Tests\Unit;
 
 use Kmeans\Math;
-use Kmeans\findCentroid;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Kmeans\Math
+ * @covers \Kmeans\Math
  */
 class MathTest extends TestCase
 {
@@ -15,7 +14,6 @@ class MathTest extends TestCase
     // Euclidean Distance
 
     /**
-     * @covers ::euclideanDist
      * @dataProvider euclidianDistanceDataProvider
      * @param array<float> $a
      * @param array<float> $b
@@ -48,7 +46,6 @@ class MathTest extends TestCase
     // Centroid
 
     /**
-     * @covers ::centroid
      * @dataProvider centroidDataProvider
      * @param array<float> $centroid
      * @param array<float> ...$points
@@ -74,7 +71,6 @@ class MathTest extends TestCase
     // Gaussian Noise
 
     /**
-     * @covers ::gaussianNoise
      * @dataProvider gaussianNoiseDataProvider
      */
     public function testGaussianNoise(float $mu, float $sigma = 1, float $nb = 1e3): void
@@ -112,7 +108,6 @@ class MathTest extends TestCase
     // Haversine
 
     /**
-     * @covers ::haversine
      * @dataProvider haversineDataProvider
      * @param array{0: float, 1: float} $from
      * @param array{0: float, 1: float} $to
@@ -142,8 +137,6 @@ class MathTest extends TestCase
     // GPS Centroid
 
     /**
-     * @covers ::gpsCentroid
-     * @uses \Kmeans\Math::haversine
      * @dataProvider gpsCentroidDataProvider
      * @param array{0: float, 1: float} $expected
      * @param array<array{0: float, 1: float}> $points

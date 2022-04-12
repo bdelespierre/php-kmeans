@@ -3,14 +3,14 @@
 namespace Tests\Unit\Concerns;
 
 use Kmeans\Concerns\HasSpaceTrait;
+use Kmeans\Euclidean\Space;
 use Kmeans\Interfaces\SpaceBoundInterface;
 use Kmeans\Interfaces\SpaceInterface;
-use Kmeans\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Kmeans\Concerns\HasSpaceTrait
- * @uses \Kmeans\Space
+ * @covers \Kmeans\Concerns\HasSpaceTrait
+ * @uses \Kmeans\Euclidean\Space
  */
 class HasSpaceTraitTest extends TestCase
 {
@@ -31,20 +31,11 @@ class HasSpaceTraitTest extends TestCase
         };
     }
 
-    /**
-     * @covers ::setSpace
-     * @covers ::getSpace
-     */
     public function testGetSpace(): void
     {
         $this->assertSame($this->space, $this->point->getSpace());
     }
 
-    /**
-     * @covers ::setSpace
-     * @covers ::getSpace
-     * @covers ::belongsTo
-     */
     public function testBelongsTo(): void
     {
         $this->assertTrue($this->point->belongsTo($this->space));

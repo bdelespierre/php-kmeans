@@ -1,6 +1,6 @@
 <?php
 
-namespace Kmeans;
+namespace Kmeans\Euclidean;
 
 use Kmeans\Concerns\HasSpaceTrait;
 use Kmeans\Interfaces\PointInterface;
@@ -25,6 +25,12 @@ class Point implements PointInterface
      */
     public function __construct(SpaceInterface $space, array $coordinates)
     {
+        if (! $space instanceof Space) {
+            throw new \LogicException(
+                "An euclidean point must belong to an euclidean space."
+            );
+        }
+
         $this->setSpace($space);
         $this->coordinates = $this->sanitizeCoordinates($coordinates);
     }
@@ -50,6 +56,7 @@ class Point implements PointInterface
      */
     private function sanitizeCoordinates(array $coordinates): array
     {
+        assert($this->space instanceof Space);
         if (count($coordinates) != $this->space->getDimensions()) {
             throw new \InvalidArgumentException(sprintf(
                 "Invalid set of coordinates: %d coordinates expected, %d given",

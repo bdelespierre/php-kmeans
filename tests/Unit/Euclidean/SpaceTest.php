@@ -1,19 +1,15 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Euclidean;
 
-use Kmeans\Space;
+use Kmeans\Euclidean\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Kmeans\Space
+ * @covers \Kmeans\Euclidean\Space
  */
 class SpaceTest extends TestCase
 {
-    /**
-     * @covers ::__construct
-     * @covers ::getDimensions
-     */
     public function testGetDimensions(): void
     {
         $space = new Space(1);
@@ -29,9 +25,6 @@ class SpaceTest extends TestCase
         $this->assertEquals(3, $space->getDimensions());
     }
 
-    /**
-     * @covers ::__construct
-     */
     public function testInvalidSpaceDimensions(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -39,11 +32,6 @@ class SpaceTest extends TestCase
         $space = new Space(0);
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::isEqualTo
-     * @covers ::getDimensions
-     */
     public function testIsEqualTo(): void
     {
         $this->assertTrue(

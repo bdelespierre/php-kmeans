@@ -1,6 +1,6 @@
 <?php
 
-namespace Kmeans;
+namespace Kmeans\Euclidean;
 
 use Kmeans\Interfaces\SpaceInterface;
 
@@ -14,7 +14,9 @@ class Space implements SpaceInterface
     public function __construct(int $dimensions)
     {
         if ($dimensions < 1) {
-            throw new \InvalidArgumentException("Invalid space dimentions: {$dimensions}");
+            throw new \InvalidArgumentException(
+                "Invalid space dimentions: {$dimensions}"
+            );
         }
 
         $this->dimensions = $dimensions;
@@ -27,6 +29,7 @@ class Space implements SpaceInterface
 
     public function isEqualTo(SpaceInterface $space): bool
     {
-        return $this->getDimensions() == $space->getDimensions();
+        return $space instanceof self
+            && $this->dimensions == $space->dimensions;
     }
 }

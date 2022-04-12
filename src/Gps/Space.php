@@ -2,12 +2,12 @@
 
 namespace Kmeans\Gps;
 
-use Kmeans\Space as BaseSpace;
+use Kmeans\Interfaces\SpaceInterface;
 
-class Space extends BaseSpace
+class Space implements SpaceInterface
 {
-    public function __construct()
+    public function isEqualTo(SpaceInterface $other): bool
     {
-        parent::__construct(2);
+        return $other instanceof self;
     }
 }

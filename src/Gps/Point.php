@@ -2,7 +2,7 @@
 
 namespace Kmeans\Gps;
 
-use Kmeans\Point as BasePoint;
+use Kmeans\Euclidean\Point as BasePoint;
 
 /**
  * @method array{0: float, 1: float} getCoordinates()

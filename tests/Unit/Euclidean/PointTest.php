@@ -1,23 +1,18 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Euclidean;
 
-use Kmeans\Point;
-use Kmeans\Space;
+use Kmeans\Euclidean\Point;
+use Kmeans\Euclidean\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \Kmeans\Point
- * @uses \Kmeans\Space
+ * @covers \Kmeans\Euclidean\Point
  * @uses \Kmeans\Concerns\HasSpaceTrait
+ * @uses \Kmeans\Euclidean\Space
  */
 class PointTest extends TestCase
 {
-    /**
-     * @covers ::__construct
-     * @covers ::sanitizeCoordinates
-     * @covers ::getCoordinates
-     */
     public function testCoordinates(): void
     {
         $space = new Space(2);
@@ -26,10 +21,6 @@ class PointTest extends TestCase
         $this->assertSame([1.2, 3.4], $point->getCoordinates());
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::sanitizeCoordinates
-     */
     public function testInvalidCoordinates(): void
     {
         $this->expectException(\LogicException::class);
@@ -39,10 +30,6 @@ class PointTest extends TestCase
         $point = new Point($space, [0.0, 0.0]); // 2d space point
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::sanitizeCoordinates
-     */
     public function testInvalidCoordinatesValues(): void
     {
         $this->expectException(\LogicException::class);
@@ -52,12 +39,6 @@ class PointTest extends TestCase
         $point = new Point($space, [NAN, 1.0, "hello!"]); /** @phpstan-ignore-line */
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::sanitizeCoordinates
-     * @covers ::getData
-     * @covers ::setData
-     */
     public function testAssociateData(): void
     {
         $space = new Space(2);
