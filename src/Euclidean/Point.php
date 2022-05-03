@@ -56,7 +56,7 @@ class Point implements PointInterface
         assert(is_array($coordinates));
         $errors = array_keys($coordinates, false, true);
 
-        if ($errors) {
+        if (! empty($errors)) {
             throw new \InvalidArgumentException(sprintf(
                 "Invalid set of coordinates: values at offsets [%s] could not be converted to numbers",
                 implode(',', $errors)

@@ -6,9 +6,6 @@ use Kmeans\Concerns\HasDataTrait;
 use Kmeans\Concerns\HasSpaceTrait;
 use Kmeans\Interfaces\PointInterface;
 
-/**
- * @method array{0: float, 1: float} getCoordinates()
- */
 class Point implements PointInterface
 {
     use HasDataTrait;

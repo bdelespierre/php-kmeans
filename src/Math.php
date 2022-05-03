@@ -12,7 +12,7 @@ class Math
     {
         assert(count($a) == count($b));
 
-        for ($dist = 0, $n = 0; $n < count($a); $n++) {
+        for ($dist = 0, $n = 0, $c = count($a); $n < $c; $n++) {
             $dist += pow($a[$n] - $b[$n], 2);
         }
 
@@ -46,7 +46,7 @@ class Math
      *
      * @see https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
      *
-     * @return array{float, float}
+     * @return array{0: float, 1: float}
      */
     public static function gaussianNoise(float $mu, float $sigma): array
     {

@@ -36,14 +36,7 @@ class RandomInitialization implements InitializationSchemeInterface
             throw new \LogicException("Unable to pick a random point out of an empty point collection");
         }
 
-        $num = mt_rand(0, count($points) - 1);
-        foreach ($points as $i => $point) {
-            if ($i > $num) {
-                break;
-            }
-        }
-
-        assert(isset($point));
-        return $point;
+        $arr = iterator_to_array($points);
+        return $arr[array_rand($arr)];
     }
 }
