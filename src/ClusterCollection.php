@@ -29,6 +29,9 @@ class ClusterCollection implements ClusterCollectionInterface
         }
     }
 
+    // ------------------------------------------------------------------------
+    // ClusterCollectionInterface
+
     public function contains(ClusterInterface $cluster): bool
     {
         return $this->clusters->contains($cluster);
@@ -36,7 +39,7 @@ class ClusterCollection implements ClusterCollectionInterface
 
     public function attach(ClusterInterface $cluster): void
     {
-        if ($cluster->getCentroid()->getSpace() !== $this->getSpace()) {
+        if (! $this->getSpace()->isEqualTo($cluster->getSpace())) {
             throw new \InvalidArgumentException(
                 "Cannot add cluster to collection: cluster space is not same as collection space"
             );
@@ -49,6 +52,9 @@ class ClusterCollection implements ClusterCollectionInterface
     {
         $this->clusters->detach($cluster);
     }
+
+    // ------------------------------------------------------------------------
+    // Iterator
 
     public function current()
     {
@@ -74,6 +80,9 @@ class ClusterCollection implements ClusterCollectionInterface
     {
         return $this->clusters->valid();
     }
+
+    // ------------------------------------------------------------------------
+    // Countable
 
     public function count(): int
     {

@@ -2,6 +2,7 @@
 
 namespace Kmeans\Euclidean;
 
+use Kmeans\Interfaces\PointInterface;
 use Kmeans\Interfaces\SpaceInterface;
 
 class Space implements SpaceInterface
@@ -31,5 +32,13 @@ class Space implements SpaceInterface
     {
         return $space instanceof self
             && $this->dimensions == $space->dimensions;
+    }
+
+    /**
+     * @param array<float> $coordinates
+     */
+    public function makePoint(array $coordinates): PointInterface
+    {
+        return new Point($this, $coordinates);
     }
 }

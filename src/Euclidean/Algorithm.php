@@ -9,14 +9,26 @@ use Kmeans\Math;
 
 class Algorithm extends BaseAlgorithm
 {
-    protected function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float
+    public function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float
     {
+        if (! $pointA instanceof Point || ! $pointB instanceof Point) {
+            throw new \InvalidArgumentException(
+                "Euclidean Algorithm can only calculate distance between euclidean points"
+            );
+        }
+
         return Math::euclideanDist($pointA->getCoordinates(), $pointB->getCoordinates());
     }
 
-    protected function findCentroid(PointCollectionInterface $points): PointInterface
+    public function findCentroid(PointCollectionInterface $points): PointInterface
     {
-        return new Point($points->getSpace(), Math::centroid(
+        if (! $points->getSpace() instanceof Space) {
+            throw new \InvalidArgumentException(
+                "Point collection should consist of Euclidean points"
+            );
+        }
+
+        return $points->getSpace()->makePoint(Math::centroid(
             array_map(fn (PointInterface $point) => $point->getCoordinates(), iterator_to_array($points))
         ));
     }

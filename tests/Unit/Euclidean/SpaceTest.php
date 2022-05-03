@@ -2,11 +2,13 @@
 
 namespace Tests\Unit\Euclidean;
 
+use Kmeans\Euclidean\Point;
 use Kmeans\Euclidean\Space;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Kmeans\Euclidean\Space
+ * @uses \Kmeans\Euclidean\Point
  */
 class SpaceTest extends TestCase
 {
@@ -40,6 +42,14 @@ class SpaceTest extends TestCase
 
         $this->assertFalse(
             (new Space(1))->isEqualTo(new Space(2))
+        );
+    }
+
+    public function testMakePoint(): void
+    {
+        $this->assertInstanceof(
+            Point::class,
+            (new Space(1))->makePoint([1])
         );
     }
 }

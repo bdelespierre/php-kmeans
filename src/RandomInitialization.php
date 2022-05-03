@@ -21,7 +21,7 @@ class RandomInitialization implements InitializationSchemeInterface
 
         $clusters = new ClusterCollection($points->getSpace());
 
-        // initialize N clusters with a random point within space boundaries
+        // initialize N clusters with a random point
         for ($n = 0; $n < $nbClusters; $n++) {
             // assign all points to the first cluster only
             $clusters->attach(new Cluster($this->getRandomPoint($points), $n == 0 ? $points : null));

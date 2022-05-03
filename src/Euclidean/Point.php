@@ -2,6 +2,7 @@
 
 namespace Kmeans\Euclidean;
 
+use Kmeans\Concerns\HasDataTrait;
 use Kmeans\Concerns\HasSpaceTrait;
 use Kmeans\Interfaces\PointInterface;
 use Kmeans\Interfaces\SpaceInterface;
@@ -9,16 +10,12 @@ use Kmeans\Interfaces\SpaceInterface;
 class Point implements PointInterface
 {
     use HasSpaceTrait;
+    use HasDataTrait;
 
     /**
      * @var array<float>
      */
     private array $coordinates;
-
-    /**
-     * @var mixed
-     */
-    private $data;
 
     /**
      * @param array<int, float> $coordinates
@@ -27,7 +24,7 @@ class Point implements PointInterface
     {
         if (! $space instanceof Space) {
             throw new \LogicException(
-                "An euclidean point must belong to an euclidean space."
+                "An euclidean point must belong to an euclidean space"
             );
         }
 
@@ -38,16 +35,6 @@ class Point implements PointInterface
     public function getCoordinates(): array
     {
         return $this->coordinates;
-    }
-
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function setData($data): void
-    {
-        $this->data = $data;
     }
 
     /**

@@ -25,10 +25,6 @@ abstract class Algorithm implements AlgorithmInterface
         $this->initScheme = $initScheme;
     }
 
-    abstract protected function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float;
-
-    abstract protected function findCentroid(PointCollectionInterface $points): PointInterface;
-
     public function registerIterationCallback(callable $callback): void
     {
         $this->iterationCallbacks[] = $callback;
@@ -36,12 +32,8 @@ abstract class Algorithm implements AlgorithmInterface
 
     public function clusterize(PointCollectionInterface $points, int $nbClusters): ClusterCollectionInterface
     {
-        try {
-            // initialize clusters
-            $clusters = $this->initScheme->initializeClusters($points, $nbClusters);
-        } catch (\Exception $e) {
-            throw new \RuntimeException("Cannot initialize clusters", 0, $e);
-        }
+        // initialize clusters
+        $clusters = $this->initScheme->initializeClusters($points, $nbClusters);
 
         // iterate until convergence is reached
         do {
