@@ -14,9 +14,11 @@ use Kmeans\Interfaces\PointInterface;
 class Algorithm implements AlgorithmInterface
 {
     private InitializationSchemeInterface $initScheme;
-    /** @var array<callable> */
-    private array $iterationCallbacks = [];
 
+    /**
+     * @var array<callable>
+     */
+    private array $iterationCallbacks = [];
 
     public function __construct(InitializationSchemeInterface $initScheme)
     {
@@ -46,7 +48,19 @@ class Algorithm implements AlgorithmInterface
         return $clusters;
     }
 
-    protected function iterate(ClusterCollectionInterface $clusters): bool
+    protected function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float
+    {
+        return Math::euclideanDist($pointA->getCoordinates(), $pointB->getCoordinates());
+    }
+
+    protected function findCentroid(PointCollectionInterface $points): PointInterface
+    {
+        return new Point($points->getSpace(), Math::centroid(
+            array_map(fn (PointInterface $point) => $point->getCoordinates(), iterator_to_array($points))
+        ));
+    }
+
+    private function iterate(ClusterCollectionInterface $clusters): bool
     {
         /** @var \SplObjectStorage<ClusterInterface, null> */
         $changed = new \SplObjectStorage();
@@ -78,7 +92,7 @@ class Algorithm implements AlgorithmInterface
         return count($changed) > 0;
     }
 
-    protected function getClosestCluster(ClusterCollectionInterface $clusters, PointInterface $point): ClusterInterface
+    private function getClosestCluster(ClusterCollectionInterface $clusters, PointInterface $point): ClusterInterface
     {
         $min = null;
         $closest = null;
@@ -94,18 +108,6 @@ class Algorithm implements AlgorithmInterface
 
         assert($closest !== null);
         return $closest;
-    }
-
-    protected function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float
-    {
-        return Math::euclideanDist($pointA->getCoordinates(), $pointB->getCoordinates());
-    }
-
-    protected function findCentroid(PointCollectionInterface $points): PointInterface
-    {
-        return new Point($points->getSpace(), Math::centroid(
-            array_map(fn ($point) => $point->getCoordinates(), iterator_to_array($points))
-        ));
     }
 
     protected function invokeIterationCallbacks(ClusterCollectionInterface $clusters): void
