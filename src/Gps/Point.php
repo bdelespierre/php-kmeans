@@ -2,36 +2,40 @@
 
 namespace Kmeans\Gps;
 
-use Kmeans\Euclidean\Point as BasePoint;
+use Kmeans\Concerns\HasDataTrait;
+use Kmeans\Concerns\HasSpaceTrait;
+use Kmeans\Interfaces\PointInterface;
 
 /**
  * @method array{0: float, 1: float} getCoordinates()
  */
-class Point extends BasePoint
+class Point implements PointInterface
 {
-    /**
-     * @param array<float> $coordinates
-     */
-    public function __construct(array $coordinates)
-    {
-        $this->validateCoordinates($coordinates);
+    use HasDataTrait;
+    use HasSpaceTrait;
 
-        parent::__construct(new Space(), $coordinates);
+    private float $lat;
+
+    private float $long;
+
+    public function __construct(float $lat, float $long)
+    {
+        $this->validateCoordinates($lat, $long);
+        $this->setSpace(Space::singleton());
+        $this->lat = $lat;
+        $this->long = $long;
     }
 
     /**
-     * @param array<float> $coordinates
+     * @return array{0: float, 1: float}
      */
-    private function validateCoordinates(array $coordinates): void
+    public function getCoordinates(): array
     {
-        if (count($coordinates) != 2) {
-            throw new \InvalidArgumentException(
-                "Invalid GPS coordinates"
-            );
-        }
+        return [$this->lat, $this->long];
+    }
 
-        list($lat, $long) = $coordinates;
-
+    private function validateCoordinates(float $lat, float $long): void
+    {
         if ($lat < -90 || $lat > 90 || $long < -180 || $long > 180) {
             throw new \InvalidArgumentException(
                 "Invalid GPS coordinates"

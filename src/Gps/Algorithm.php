@@ -9,18 +9,18 @@ use Kmeans\Math;
 
 class Algorithm extends BaseAlgorithm
 {
-    protected function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float
+    public function getDistanceBetween(PointInterface $pointA, PointInterface $pointB): float
     {
         if (! $pointA instanceof Point || ! $pointB instanceof Point) {
             throw new \InvalidArgumentException(
-                "Expecting \\Kmeans\\GPS\\Point"
+                "GPS algorithm can only calculate distance from GPS locations"
             );
         }
 
         return Math::haversine($pointA->getCoordinates(), $pointB->getCoordinates());
     }
 
-    protected function findCentroid(PointCollectionInterface $points): PointInterface
+    public function findCentroid(PointCollectionInterface $points): PointInterface
     {
         if (! $points->getSpace() instanceof Space) {
             throw new \InvalidArgumentException(
@@ -28,11 +28,11 @@ class Algorithm extends BaseAlgorithm
             );
         }
 
-        /** @var array<Point> $points */
-        $points = iterator_to_array($points);
+        /** @var array<Point> $pointsArray */
+        $pointsArray = iterator_to_array($points);
 
-        return new Point(Math::gpsCentroid(
-            array_map(fn (Point $point) => $point->getCoordinates(), $points)
+        return $points->getSpace()->makePoint(Math::gpsCentroid(
+            array_map(fn (Point $point) => $point->getCoordinates(), $pointsArray)
         ));
     }
 }
