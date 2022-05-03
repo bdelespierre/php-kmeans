@@ -40,6 +40,9 @@ class AlgorithmTest extends TestCase
         Mockery::close();
     }
 
+    // ------------------------------------------------------------------------
+    // tests
+
     /**
      * @dataProvider clusterizeDataProvider
      * @covers ::__construct
@@ -103,44 +106,6 @@ class AlgorithmTest extends TestCase
     }
 
     /**
-     * @return array<mixed>
-     */
-    public function clusterizeDataProvider(): array
-    {
-        return [
-            'one dimension, 3 clusters, 5 points per cluster' => [
-                'dimension' => 1,
-                'expected' => [
-                    [-50],
-                    [0],
-                    [50],
-                ],
-                'initialClusterCentroids' => [
-                    [-10],
-                    [0],
-                    [10]
-                ],
-                'nbPointsPerCentroid' => 5,
-            ],
-
-            'two dimensions, 3 clusters, 50 points per cluster' => [
-                'dimension' => 2,
-                'expected' => [
-                    [20, 10],
-                    [40, 20],
-                    [60, 15],
-                ],
-                'initialClusterCentroids' => [
-                    [12, 10],
-                    [33, 20],
-                    [60, 10],
-                ],
-                'nbPointsPerCentroid' => 50,
-            ],
-        ];
-    }
-
-    /**
      * @covers ::__construct
      * @covers ::clusterize
      */
@@ -197,6 +162,50 @@ class AlgorithmTest extends TestCase
 
         $this->assertTrue($callbackCalled);
     }
+
+    // ------------------------------------------------------------------------
+    // data-providers
+
+    /**
+     * @return array<mixed>
+     */
+    public function clusterizeDataProvider(): array
+    {
+        return [
+            'one dimension, 3 clusters, 5 points per cluster' => [
+                'dimension' => 1,
+                'expected' => [
+                    [-50],
+                    [0],
+                    [50],
+                ],
+                'initialClusterCentroids' => [
+                    [-10],
+                    [0],
+                    [10]
+                ],
+                'nbPointsPerCentroid' => 5,
+            ],
+
+            'two dimensions, 3 clusters, 50 points per cluster' => [
+                'dimension' => 2,
+                'expected' => [
+                    [20, 10],
+                    [40, 20],
+                    [60, 15],
+                ],
+                'initialClusterCentroids' => [
+                    [12, 10],
+                    [33, 20],
+                    [60, 10],
+                ],
+                'nbPointsPerCentroid' => 50,
+            ],
+        ];
+    }
+
+    // ------------------------------------------------------------------------
+    // helpers
 
     /**
      * @param array<array<float>> $centroids
