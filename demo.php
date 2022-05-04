@@ -16,17 +16,13 @@ $data = [
 ];
 
 // create a 2-dimentions space
-$space = new Kmeans\Space(2);
+$space = new Kmeans\Euclidean\Space(2);
 
 // prepare the points
-$points = new Kmeans\PointCollection($space);
-
-foreach ($data as $coordinates) {
-    $points->attach(new Kmeans\Point($space, $coordinates));
-}
+$points = new Kmeans\PointCollection($space, array_map([$space, 'makePoint'], $data));
 
 // prepare the algorithm
-$algorithm = new Kmeans\Algorithm(new Kmeans\RandomInitialization());
+$algorithm = new Kmeans\Euclidean\Algorithm(new Kmeans\RandomInitialization());
 
 // cluster these 50 points in 3 clusters
 $clusters = $algorithm->clusterize($points, 3);
@@ -34,6 +30,7 @@ $clusters = $algorithm->clusterize($points, 3);
 // display the cluster centers and attached points
 foreach ($clusters as $num => $cluster) {
     $coordinates = $cluster->getCentroid()->getCoordinates();
+    assert(is_int($num));
     printf(
         "Cluster #%s [%d,%d] has %d points\n",
         $num,
