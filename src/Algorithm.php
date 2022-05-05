@@ -30,21 +30,32 @@ abstract class Algorithm implements AlgorithmInterface
         $this->iterationCallbacks[] = $callback;
     }
 
-    public function clusterize(PointCollectionInterface $points, int $nbClusters): ClusterCollectionInterface
-    {
+    public function clusterize(
+        PointCollectionInterface $points,
+        int $nClusters,
+        ?int $maxIter = null
+    ): ClusterCollectionInterface {
+        $maxIter ??= INF;
+
+        if ($maxIter < 1) {
+            throw new \UnexpectedValueException(
+                "Invalid maximum number of iterations: {$maxIter}"
+            );
+        }
+
         // initialize clusters
-        $clusters = $this->initScheme->initializeClusters($points, $nbClusters);
+        $clusters = $this->initScheme->initializeClusters($points, $nClusters);
 
         // iterate until convergence is reached
         do {
             $this->invokeIterationCallbacks($clusters);
-        } while ($this->iterate($clusters));
+        } while ($this->iterate($clusters) && --$maxIter);
 
         // clustering is done.
         return $clusters;
     }
 
-    private function iterate(ClusterCollectionInterface $clusters): bool
+    protected function iterate(ClusterCollectionInterface $clusters): bool
     {
         /** @var \SplObjectStorage<ClusterInterface, null> */
         $changed = new \SplObjectStorage();
@@ -78,13 +89,13 @@ abstract class Algorithm implements AlgorithmInterface
 
     private function getClosestCluster(ClusterCollectionInterface $clusters, PointInterface $point): ClusterInterface
     {
-        $min = null;
+        $min = INF;
         $closest = null;
 
         foreach ($clusters as $cluster) {
             $distance = $this->getDistanceBetween($point, $cluster->getCentroid());
 
-            if (is_null($min) || $distance < $min) {
+            if ($distance < $min) {
                 $min = $distance;
                 $closest = $cluster;
             }

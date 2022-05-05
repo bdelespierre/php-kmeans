@@ -6,11 +6,13 @@ use Kmeans\Euclidean\Algorithm;
 use Kmeans\Euclidean\Point;
 use Kmeans\Euclidean\Space;
 use Kmeans\Interfaces\AlgorithmInterface;
+use Kmeans\Interfaces\ClusterCollectionInterface;
 use Kmeans\Interfaces\InitializationSchemeInterface;
 use Kmeans\Interfaces\PointCollectionInterface;
 use Kmeans\Interfaces\SpaceInterface;
 use Kmeans\Math;
 use Kmeans\PointCollection;
+use Kmeans\RandomInitialization;
 use Tests\Unit\AlgorithmTest as BaseAlgorithmTest;
 
 /**
@@ -24,6 +26,7 @@ use Tests\Unit\AlgorithmTest as BaseAlgorithmTest;
  * @uses \Kmeans\Euclidean\Space
  * @uses \Kmeans\Math
  * @uses \Kmeans\PointCollection
+ * @uses \Kmeans\RandomInitialization
  * @phpstan-import-type ClusterizeScenarioData from BaseAlgorithmTest
  */
 class AlgorithmTest extends BaseAlgorithmTest
@@ -145,5 +148,43 @@ class AlgorithmTest extends BaseAlgorithmTest
         $algorithm->findCentroid(
             new PointCollection(new \Kmeans\Gps\Space(), [])
         );
+    }
+
+    public function testMaxIterations(): void
+    {
+        $algorithm = new class (new RandomInitialization()) extends Algorithm {
+            protected function iterate(ClusterCollectionInterface $clusters): bool
+            {
+                // do nothing and iterate indefinitely
+                return true;
+            }
+        };
+
+        $iterations = 0;
+        $algorithm->registerIterationCallback(function () use (&$iterations) {
+            $iterations++;
+        });
+
+        $space = new Space(1);
+        $points = new PointCollection(
+            $space,
+            array_map([$space, 'makePoint'], [[1],[2],[3]])
+        );
+
+        $algorithm->clusterize($points, 3, 300);
+
+        $this->assertEquals(
+            300,
+            $iterations
+        );
+    }
+
+    public function testMaxIterationsException(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessageMatches('/^Invalid maximum number of iterations/');
+
+        $algorithm = new Algorithm(new RandomInitialization());
+        $algorithm->clusterize(new PointCollection(new Space(1), []), 3, 0);
     }
 }
