@@ -27,7 +27,7 @@ use Tests\Unit\AlgorithmTest as BaseAlgorithmTest;
  * @uses \Kmeans\Gps\Space
  * @uses \Kmeans\Math
  * @uses \Kmeans\PointCollection
- * @phpstan-import-type ClusterizeScenarioData from BaseAlgorithmTest
+ * @phpstan-import-type ScenarioData from BaseAlgorithmTest
  */
 class AlgorithmTest extends BaseAlgorithmTest
 {
@@ -38,12 +38,12 @@ class AlgorithmTest extends BaseAlgorithmTest
     }
 
     /**
-     * @return array<string, ClusterizeScenarioData>
+     * @return array<string, ScenarioData>
      */
-    public function clusterizeDataProvider(): array
+    public function fitDataProvider(): array
     {
         return [
-            'French cities' => $this->makeClusterizeScenarioData(
+            'French cities' => $this->makeScenarioData(
                 new Space(),
                 [
                     [48.85889, 2.32004], // Paris

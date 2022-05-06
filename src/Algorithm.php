@@ -30,7 +30,7 @@ abstract class Algorithm implements AlgorithmInterface
         $this->iterationCallbacks[] = $callback;
     }
 
-    public function clusterize(
+    public function fit(
         PointCollectionInterface $points,
         int $nClusters,
         ?int $maxIter = null

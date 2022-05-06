@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
  * @covers \Kmeans\Algorithm
  * @uses \Kmeans\Cluster
  * @uses \Kmeans\ClusterCollection
- * @phpstan-type ClusterizeScenarioData array{
+ * @phpstan-type ScenarioData array{
  *     space: SpaceInterface,
  *     radius: float,
  *     points: PointCollectionInterface,
@@ -46,9 +46,9 @@ abstract class AlgorithmTest extends TestCase
     abstract protected function makeAlgorithm(InitializationSchemeInterface $initScheme): AlgorithmInterface;
 
     /**
-     * @return array<string, ClusterizeScenarioData>
+     * @return array<string, ScenarioData>
      */
-    abstract public function clusterizeDataProvider(): array;
+    abstract public function fitDataProvider(): array;
 
     /**
      * @param array<float> $center
@@ -60,9 +60,9 @@ abstract class AlgorithmTest extends TestCase
     // tests
 
     /**
-     * @dataProvider clusterizeDataProvider
+     * @dataProvider fitDataProvider
      */
-    public function testClusterize(
+    public function testFit(
         SpaceInterface $space,
         float $radius,
         PointCollectionInterface $points,
@@ -76,7 +76,7 @@ abstract class AlgorithmTest extends TestCase
         );
 
         $result = iterator_to_array(
-            $algorithm->clusterize($points, count($expectedCentroids))
+            $algorithm->fit($points, count($expectedCentroids))
         );
 
         foreach ($expectedCentroids as $i => $expectedCentroid) {
@@ -105,9 +105,9 @@ abstract class AlgorithmTest extends TestCase
 
     /**
      * @param array<array<float>> $centers
-     * @return ClusterizeScenarioData
+     * @return ScenarioData
      */
-    protected function makeClusterizeScenarioData(
+    protected function makeScenarioData(
         SpaceInterface $space,
         array $centers,
         float $radius,

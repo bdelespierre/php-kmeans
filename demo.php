@@ -25,7 +25,7 @@ $points = new Kmeans\PointCollection($space, array_map([$space, 'makePoint'], $d
 $algorithm = new Kmeans\Euclidean\Algorithm(new Kmeans\RandomInitialization());
 
 // cluster these 50 points in 3 clusters
-$clusters = $algorithm->clusterize($points, 3);
+$clusters = $algorithm->fit($points, 3);
 
 // display the cluster centers and attached points
 foreach ($clusters as $num => $cluster) {

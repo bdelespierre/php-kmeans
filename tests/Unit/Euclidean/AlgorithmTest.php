@@ -27,12 +27,12 @@ use Tests\Unit\AlgorithmTest as BaseAlgorithmTest;
  * @uses \Kmeans\Math
  * @uses \Kmeans\PointCollection
  * @uses \Kmeans\RandomInitialization
- * @phpstan-import-type ClusterizeScenarioData from BaseAlgorithmTest
+ * @phpstan-import-type ScenarioData from BaseAlgorithmTest
  */
 class AlgorithmTest extends BaseAlgorithmTest
 {
     /**
-     * @dataProvider clusterizeDataProvider
+     * @dataProvider fitDataProvider
      */
     public function testIterationCallback(
         SpaceInterface $space,
@@ -53,7 +53,7 @@ class AlgorithmTest extends BaseAlgorithmTest
             $called = true;
         });
 
-        $algorithm->clusterize($points, count($expectedCentroids));
+        $algorithm->fit($points, count($expectedCentroids));
 
         $this->assertTrue($called);
     }
@@ -65,12 +65,12 @@ class AlgorithmTest extends BaseAlgorithmTest
     }
 
     /**
-     * @return array<string, ClusterizeScenarioData>
+     * @return array<string, ScenarioData>
      */
-    public function clusterizeDataProvider(): array
+    public function fitDataProvider(): array
     {
         return [
-            '1D' => $this->makeClusterizeScenarioData(
+            '1D' => $this->makeScenarioData(
                 new Space(1),
                 [
                     [-100],
@@ -80,7 +80,7 @@ class AlgorithmTest extends BaseAlgorithmTest
                 2, // radius
                 10, // points per clusters
             ),
-            '2D' => $this->makeClusterizeScenarioData(
+            '2D' => $this->makeScenarioData(
                 new Space(2),
                 [
                     [-100, -100],
@@ -90,7 +90,7 @@ class AlgorithmTest extends BaseAlgorithmTest
                 2, // radius
                 10, // points per clusters
             ),
-            '3D' => $this->makeClusterizeScenarioData(
+            '3D' => $this->makeScenarioData(
                 new Space(3),
                 [
                     [-100, -100, -100],
@@ -171,7 +171,7 @@ class AlgorithmTest extends BaseAlgorithmTest
             array_map([$space, 'makePoint'], [[1],[2],[3]])
         );
 
-        $algorithm->clusterize($points, 3, 300);
+        $algorithm->fit($points, 3, 300);
 
         $this->assertEquals(
             300,
@@ -185,6 +185,6 @@ class AlgorithmTest extends BaseAlgorithmTest
         $this->expectExceptionMessageMatches('/^Invalid maximum number of iterations/');
 
         $algorithm = new Algorithm(new RandomInitialization());
-        $algorithm->clusterize(new PointCollection(new Space(1), []), 3, 0);
+        $algorithm->fit(new PointCollection(new Space(1), []), 3, 0);
     }
 }
