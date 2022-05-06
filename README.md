@@ -7,8 +7,6 @@
 
 [K-mean](http://en.wikipedia.org/wiki/K-means_clustering) clustering algorithm implementation in PHP.
 
-Please also see the [FAQ](#faq)
-
 ## Installation
 
 You can install the package via composer:
@@ -22,8 +20,7 @@ composer require bdelespierre/php-kmeans
 ```PHP
 require "vendor/autoload.php";
 
-// prepare 50 points of 2D space to be clustered
-$points = [
+$data = [
     [80,55],[86,59],[19,85],[41,47],[57,58],
     [76,22],[94,60],[13,93],[90,48],[52,54],
     [62,46],[88,44],[85,24],[63,14],[51,40],
@@ -37,30 +34,35 @@ $points = [
 ];
 
 // create a 2-dimentions space
-$space = new KMeans\Space(2);
+$space = new Kmeans\Space(2);
 
-// add points to space
-foreach ($points as $i => $coordinates) {
-    $space->addPoint($coordinates);
+// prepare the points
+$points = new Kmeans\PointCollection($space);
+
+foreach ($data as $coordinates) {
+    $points->attach(new Kmeans\Point($space, $coordinates));
 }
 
+// prepare the algorithm
+$algorithm = new Kmeans\Algorithm(new Kmeans\RandomInitialization());
+
 // cluster these 50 points in 3 clusters
-$clusters = $space->solve(3);
+$clusters = $algorithm->clusterize($points, 3);
 
 // display the cluster centers and attached points
 foreach ($clusters as $num => $cluster) {
-    $coordinates = $cluster->getCoordinates();
+    $coordinates = $cluster->getCentroid()->getCoordinates();
     printf(
-        "Cluster %s [%d,%d]: %d points\n",
+        "Cluster #%s [%d,%d] has %d points\n",
         $num,
         $coordinates[0],
         $coordinates[1],
-        count($cluster)
+        count($cluster->getPoints())
     );
 }
 ```
 
-**Note:** the example is given with points of a 2D space but it will work with any dimention >1.
+**Note:** the example is given with points of a 2D space but it will work with any dimention greater than or equal to 1.
 
 ### Testing
 
@@ -89,51 +91,3 @@ If you discover any security related issues, please email benjamin.delespierre@g
 ## License
 
 Lesser General Public License (LGPL). Please see [License File](LICENSE.md) for more information.
-
-## FAQ
-
-### How to get coordinates of a point/cluster:
-```PHP
-$x = $point[0];
-$y = $point[1];
-
-// or
-
-list($x,$y) = $point->getCoordinates();
-```
-
-### List all points of a space/cluster:
-
-```PHP
-foreach ($cluster as $point) {
-    printf('[%d,%d]', $point[0], $point[1]);
-}
-```
-
-### Attach data to a point:
-
-```PHP
-$point = $space->addPoint([$x, $y, $z], "user #123");
-```
-
-### Retrieve point data:
-
-```PHP
-$data = $space[$point]; // e.g. "user #123"
-```
-
-### Watch the algorithm run
-
-Each iteration step can be monitored using a callback function passed to `Kmeans\Space::solve`:
-
-```PHP
-$clusters = $space->solve(3, function($space, $clusters) {
-    static $iterations = 0;
-
-    printf("Iteration: %d\n", ++$iterations);
-
-    foreach ($clusters as $i => $cluster) {
-        printf("Cluster %d [%d,%d]: %d points\n", $i, $cluster[0], $cluster[1], count($cluster));
-    }
-});
-```

@@ -2,8 +2,7 @@
 
 require "vendor/autoload.php";
 
-// prepare 50 points of 2D space to be clustered
-$points = [
+$data = [
     [80,55],[86,59],[19,85],[41,47],[57,58],
     [76,22],[94,60],[13,93],[90,48],[52,54],
     [62,46],[88,44],[85,24],[63,14],[51,40],
@@ -17,24 +16,26 @@ $points = [
 ];
 
 // create a 2-dimentions space
-$space = new KMeans\Space(2);
+$space = new Kmeans\Euclidean\Space(2);
 
-// add points to space
-foreach ($points as $i => $coordinates) {
-    $space->addPoint($coordinates);
-}
+// prepare the points
+$points = new Kmeans\PointCollection($space, array_map([$space, 'makePoint'], $data));
+
+// prepare the algorithm
+$algorithm = new Kmeans\Euclidean\Algorithm(new Kmeans\RandomInitialization());
 
 // cluster these 50 points in 3 clusters
-$clusters = $space->solve(3);
+$clusters = $algorithm->fit($points, 3);
 
 // display the cluster centers and attached points
 foreach ($clusters as $num => $cluster) {
-    $coordinates = $cluster->getCoordinates();
+    $coordinates = $cluster->getCentroid()->getCoordinates();
+    assert(is_int($num));
     printf(
-        "Cluster %s [%d,%d]: %d points\n",
+        "Cluster #%s [%d,%d] has %d points\n",
         $num,
         $coordinates[0],
         $coordinates[1],
-        count($cluster)
+        count($cluster->getPoints())
     );
 }
