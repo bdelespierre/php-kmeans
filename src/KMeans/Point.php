@@ -98,7 +98,7 @@ class Point implements \ArrayAccess
         return isset($this->coordinates[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->coordinates[$offset];
     }
